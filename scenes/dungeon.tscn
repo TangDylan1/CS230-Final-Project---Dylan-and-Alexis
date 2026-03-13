@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://dldg71rthjt4f"]
+
+[ext_resource type="Script" uid="uid://c5tnue1abbyfx" path="res://scripts/dungeon.gd" id="1_dng"]
+[ext_resource type="Script" uid="uid://jiqb5jbb1ret" path="res://scripts/minimap.gd" id="2_map"]
+
+[node name="Dungeon" type="Node2D"]
+script = ExtResource("1_dng")
+
+[node name="Rooms" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="TransitionLayer" type="CanvasLayer" parent="."]
+
+[node name="FadeOverlay" type="ColorRect" parent="TransitionLayer"]
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="MinimapLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Minimap" type="Node2D" parent="MinimapLayer"]
+script = ExtResource("2_map")
