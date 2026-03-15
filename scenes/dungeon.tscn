@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://8ryh31ld5bq" path="res://assets/tileset/GuttyKreum_ForestGraveyard/Tilemaps/Fulltilemap.png" id="2_fpimf"]
 [ext_resource type="Script" uid="uid://jiqb5jbb1ret" path="res://scripts/minimap.gd" id="2_map"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0wj4k"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fpimf"]
 texture = ExtResource("2_fpimf")
 3:0/0 = 0
 6:0/0 = 0
@@ -780,7 +780,7 @@ texture = ExtResource("2_fpimf")
 15:31/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_fvacq"]
-sources/0 = SubResource("TileSetAtlasSource_0wj4k")
+sources/0 = SubResource("TileSetAtlasSource_fpimf")
 
 [node name="Dungeon" type="Node2D"]
 script = ExtResource("1_dng")
@@ -806,3 +806,6 @@ layer = 2
 
 [node name="Minimap" type="Node2D" parent="MinimapLayer"]
 script = ExtResource("2_map")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.3760466, 0.38724002, 0.5549008, 1)

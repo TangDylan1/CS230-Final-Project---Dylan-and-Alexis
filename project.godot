@@ -24,3 +24,5 @@ window/stretch/mode="viewport"
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.06720009, 0.06721379, 0.14163193, 1)
+occlusion_culling/use_occlusion_culling=true

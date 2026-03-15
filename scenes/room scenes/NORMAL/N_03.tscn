@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=4 uid="uid://dlke3irp3gbyg"]
+[gd_scene load_steps=6 format=4 uid="uid://dlke3irp3gbyg"]
 
 [ext_resource type="Texture2D" uid="uid://8ryh31ld5bq" path="res://assets/tileset/GuttyKreum_ForestGraveyard/Tilemaps/Fulltilemap.png" id="1_ic3ow"]
 [ext_resource type="TileSet" uid="uid://ck1gfpteisar1" path="res://assets/tileset/tileset.tres" id="2_g6gjo"]
+[ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="3_2kckn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c0m4q"]
 texture = ExtResource("1_ic3ow")
@@ -919,3 +920,21 @@ tile_set = SubResource("TileSet_rmrsa")
 scale = Vector2(2, 2)
 tile_map_data = PackedByteArray("AAAKAAUAAAAKAAgAAAAKAAYAAAAKAAkAAAALAAUAAAALAAgAAAALAAYAAAALAAkAAAAKAAkAAAAKAAgAAAAKAAoAAAAKAAkAAAALAAkAAAALAAgAAAALAAoAAAALAAkAAAACAAEAAAAEAAoAAAACAAIAAAAEAAsAAAADAAEAAAAFAAoAAAADAAIAAAAFAAsAAAATAAsAAAAEAAoAAAATAAwAAAAEAAsAAAAUAAsAAAAFAAoAAAAUAAwAAAAFAAsAAAACAAsAAAACABwAAAACAAwAAAACAB0AAAADAAsAAAADABwAAAADAAwAAAADAB0AAAA=")
 tile_set = ExtResource("2_g6gjo")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(353, 183)
+scale = Vector2(1.0022321, 0.9720052)
+color = Color(0.9505953, 0.6704582, 0.26395655, 1)
+energy = 0.5
+shadow_enabled = true
+texture = ExtResource("3_2kckn")
+texture_scale = 0.84
+
+[node name="PointLight2D" type="PointLight2D" parent="PointLight2D"]
+position = Vector2(2.9932861, 134.77293)
+scale = Vector2(1.0022321, 0.9720052)
+color = Color(0.9505953, 0.6704582, 0.26395655, 1)
+energy = 0.5
+shadow_enabled = true
+texture = ExtResource("3_2kckn")
+texture_scale = 0.84
