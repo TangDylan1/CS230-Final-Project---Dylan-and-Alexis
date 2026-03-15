@@ -58,6 +58,22 @@ const DOOR_TILE_ATLAS := {
 	],
 }
 
+const BOSS_DOOR_TILE_ATLAS := {
+	Vector2i.UP: [
+		Vector2i(22, 14), Vector2i(23, 14),
+		Vector2i(22, 15), Vector2i(23, 15),
+	],
+	Vector2i.LEFT: [
+		Vector2i(27, 16), Vector2i(27, 17),
+	],
+	Vector2i.RIGHT: [
+		Vector2i(26, 16), Vector2i(26, 17),
+	],
+	Vector2i.DOWN: [
+		Vector2i(20, 18), Vector2i(21, 18),
+	],
+}
+
 # Pixel center of each door opening (for placing the Area2D trigger).
 const DOOR_CENTERS := {
 	Vector2i.UP:    Vector2(352, 16),
@@ -269,8 +285,17 @@ func _apply_door_tiles(open_dirs: Array[Vector2i]) -> void:
 		if not DOOR_TILE_CELLS.has(dir) or not DOOR_TILE_ATLAS.has(dir):
 			continue
 
-		var cells: Array = DOOR_TILE_CELLS[dir]
-		var atlas_tiles: Array = DOOR_TILE_ATLAS[dir]
+		var cells: Array
+		var atlas_tiles: Array
+
+
+		if _layout.get(_current_cell, DungeonGenerator.RoomType.NORMAL) == DungeonGenerator.RoomType.BOSS:
+			cells = DOOR_TILE_CELLS[dir]
+			atlas_tiles = BOSS_DOOR_TILE_ATLAS[dir]
+		else:
+			cells = DOOR_TILE_CELLS[dir]
+			atlas_tiles = DOOR_TILE_ATLAS[dir]
+
 		var tile_count := mini(cells.size(), atlas_tiles.size())
 
 		for i in range(tile_count):

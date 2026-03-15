@@ -1,9 +1,6 @@
 class_name RoomTemplates
 extends RefCounted
-## Templates are authored as 20x11 and scaled to ROOM_WIDTH x ROOM_HEIGHT at runtime.
-##
-## Legend:  W = wall, . = floor, S = spike
-##
+
 ## Doors are NOT part of the template — they're carved at runtime based on
 ## which adjacent rooms exist in the dungeon layout.
 

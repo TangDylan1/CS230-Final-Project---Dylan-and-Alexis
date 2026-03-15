@@ -101,7 +101,6 @@ func get_room_neighbors(pos: Vector2i) -> Array[Vector2i]:
 			neighbors.append(neighbor)
 	return neighbors
 
-
 # ==============================================================================
 # STEP 1: THE DRUNKARD'S WALK
 # ==============================================================================
