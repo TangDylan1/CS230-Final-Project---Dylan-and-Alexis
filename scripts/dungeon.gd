@@ -1,7 +1,7 @@
 extends Node2D
 ## Dungeon manager. Generates the room layout with the Drunkard's Walk
-## algorithm, paints one global TileMapLayer from room templates, spawns
-## the player, and handles room transitions with a fade-to-black effect.
+## algorithm, instantiates room scenes, spawns the player, and handles
+## room transitions with a fade-to-black effect.
 ##
 ## CONTROLS:
 ##   WASD / Arrow keys — move the player
@@ -12,6 +12,7 @@ extends Node2D
 const ROOM_PIXEL_SIZE := Vector2(704, 480)
 const ROOM_WIDTH := 22
 const ROOM_HEIGHT := 15
+const ROOM_TEMPLATES := preload("res://scripts/room_templates.gd")
 
 # When the player enters a door going direction D, they spawn at this
 # room-local position in the TARGET room (near the opposite door, pushed
@@ -23,13 +24,38 @@ const SPAWN_OFFSETS := {
 	Vector2i.RIGHT: Vector2(48, 224),
 }
 
-# Door openings are 2 tiles wide, centered on each wall.
-# Each entry maps a direction to the tile coords that get carved open.
-const DOOR_TILES := {
-	Vector2i.UP:    [Vector2i(10, 0),  Vector2i(11, 0)],
-	Vector2i.DOWN:  [Vector2i(10, 14), Vector2i(11, 14)],
-	Vector2i.LEFT:  [Vector2i(0, 6),   Vector2i(0, 7)],
-	Vector2i.RIGHT: [Vector2i(21, 6),  Vector2i(21, 7)],
+# Door cell positions inside a room (22x15).
+const DOOR_TILE_CELLS := {
+	Vector2i.UP: [
+		Vector2i(10, 0), Vector2i(11, 0),
+		Vector2i(10, 1), Vector2i(11, 1),
+	],
+	Vector2i.LEFT: [
+		Vector2i(0, 6), Vector2i(0, 7),
+	],
+	Vector2i.RIGHT: [
+		Vector2i(21, 6), Vector2i(21, 7),
+	],
+	Vector2i.DOWN: [
+		Vector2i(10, 14), Vector2i(11, 14),
+	],
+}
+
+# Atlas replacements for each door side.
+const DOOR_TILE_ATLAS := {
+	Vector2i.UP: [
+		Vector2i(18, 8), Vector2i(19, 8),
+		Vector2i(18, 9), Vector2i(19, 9),
+	],
+	Vector2i.LEFT: [
+		Vector2i(17, 10), Vector2i(17, 11),
+	],
+	Vector2i.RIGHT: [
+		Vector2i(20, 10), Vector2i(20, 11),
+	],
+	Vector2i.DOWN: [
+		Vector2i(18, 12), Vector2i(19, 12),
+	],
 }
 
 # Pixel center of each door opening (for placing the Area2D trigger).
@@ -48,11 +74,13 @@ var _generator := DungeonGenerator.new()
 var _layout: Dictionary = {}
 var _current_cell: Vector2i
 var _transitioning := false
-var _tileset: TileSet
 var _player: CharacterBody2D
 var _door_areas: Array[Area2D] = []
-var _room_templates: Dictionary = {}   # for each cell, store the room template used
+var _room_scenes: Dictionary = {}      # for each cell, store the selected room scene
 var _room_open_dirs: Dictionary = {}   # for each cell, store the open directions
+var _room_container: Node2D
+var _active_room_root: Node2D
+var _active_room_tilemap: TileMapLayer
 
 @onready var _camera: Camera2D = $Camera2D
 @onready var _fade: ColorRect = $TransitionLayer/FadeOverlay
@@ -61,9 +89,15 @@ var _room_open_dirs: Dictionary = {}   # for each cell, store the open direction
 
 
 func _ready() -> void:
-	_tileset = TileFactory.create_tileset()
-	_tilemap.tile_set = _tileset
-	_tilemap.scale = Vector2(2, 2)
+	if _tilemap:
+		_tilemap.visible = false
+		_tilemap.clear()
+
+	_room_container = Node2D.new()
+	_room_container.name = "RoomContainer"
+	add_child(_room_container)
+	move_child(_room_container, 0)
+
 	_generate_dungeon()
 
 
@@ -73,21 +107,21 @@ func _ready() -> void:
 
 func _generate_dungeon() -> void:
 	_layout = _generator.generate(grid_size, target_rooms)
-	_room_templates.clear()
+	_room_scenes.clear()
 	_room_open_dirs.clear()
 
 	for cell_key in _layout.keys():
 		var cell: Vector2i = cell_key
 		var room_type: int = _layout[cell]
 
-		var template := RoomTemplates.get_random_template(room_type)
+		var room_scene: PackedScene = ROOM_TEMPLATES.get_random_room_scene(room_type)
 
 		var neighbors := _generator.get_room_neighbors(cell)
 		var open_dirs: Array[Vector2i] = []
 		for neighbor in neighbors:
 			open_dirs.append(neighbor - cell)
 
-		_room_templates[cell] = template
+		_room_scenes[cell] = room_scene
 		_room_open_dirs[cell] = open_dirs
 
 	_current_cell = _generator.start_room
@@ -126,10 +160,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _regenerate() -> void:
 	_clear_doors()
+	_clear_active_room()
 	if _tilemap:
 		_tilemap.clear()
 	_layout.clear()
-	_room_templates.clear()
+	_room_scenes.clear()
 	_room_open_dirs.clear()
 	_generate_dungeon()
 
@@ -192,12 +227,12 @@ func _update_minimap() -> void:
 # Room management
 # --------------------------------------------------------------------------
 
-# Update the room's open directions and template after swapping rooms
+# Update the room scene and open directions after swapping rooms.
 func _show_current_room() -> void:
-	var template: String = _room_templates[_current_cell]
 	var open_dirs := _get_open_dirs(_current_cell)
 
-	_build_tilemap(template, open_dirs)
+	_spawn_room_scene(_current_cell)
+	_apply_door_tiles(open_dirs)
 	_create_doors(open_dirs)
 
 
@@ -209,40 +244,61 @@ func _get_open_dirs(cell: Vector2i) -> Array[Vector2i]:
 	return dirs
 
 
-func _build_tilemap(template: String, open_dirs: Array[Vector2i]) -> void:
-	_tilemap.clear()
+func _spawn_room_scene(cell: Vector2i) -> void:
+	_clear_active_room()
+	if not _room_scenes.has(cell):
+		return
 
-	# Parse the template string row by row, character by character.
-	var lines := template.strip_edges().split("\n")
-	for y in range(mini(lines.size(), ROOM_HEIGHT)):
-		var line := lines[y]
-		for x in range(mini(line.length(), ROOM_WIDTH)):
-			var atlas_coords: Vector2i
-			match line[x]:
-				"W":
-					atlas_coords = TileFactory.WALL
-				"S":
-					atlas_coords = TileFactory.SPIKE
-				_:
-					atlas_coords = TileFactory.FLOOR
-			_tilemap.set_cell(Vector2i(x, y), TileFactory.SOURCE_ID, atlas_coords)
+	var room_scene: PackedScene = _room_scenes[cell] as PackedScene
+	if room_scene == null:
+		return
 
-	# Carve door openings. For each door tile, carve inward from the wall
-	# edge until we reach the room interior (a floor tile). This handles
-	# rooms with thick walls automatically — a 1-tile wall carves 1 tile,
-	# a 2-tile wall carves 2 tiles, etc.
+	_active_room_root = room_scene.instantiate() as Node2D
+	if _active_room_root == null:
+		return
+
+	_room_container.add_child(_active_room_root)
+	_active_room_tilemap = _find_tilemap_layer(_active_room_root)
+
+
+func _apply_door_tiles(open_dirs: Array[Vector2i]) -> void:
+	if _active_room_tilemap == null:
+		return
+
 	for dir in open_dirs:
-		if not DOOR_TILES.has(dir):
+		if not DOOR_TILE_CELLS.has(dir) or not DOOR_TILE_ATLAS.has(dir):
 			continue
-		var inward := _inward_direction(dir)
-		var tiles: Array = DOOR_TILES[dir]
-		for start_pos in tiles:
-			var pos: Vector2i = start_pos
-			while _in_room(pos):
-				if _tilemap.get_cell_atlas_coords(pos) == TileFactory.FLOOR:
-					break
-				_tilemap.set_cell(pos, TileFactory.SOURCE_ID, TileFactory.FLOOR)
-				pos += inward
+
+		var cells: Array = DOOR_TILE_CELLS[dir]
+		var atlas_tiles: Array = DOOR_TILE_ATLAS[dir]
+		var tile_count := mini(cells.size(), atlas_tiles.size())
+
+		for i in range(tile_count):
+			var cell: Vector2i = cells[i] as Vector2i
+			var atlas: Vector2i = atlas_tiles[i] as Vector2i
+			_active_room_tilemap.set_cell(cell, 0, atlas)
+
+
+func _find_tilemap_layer(root: Node) -> TileMapLayer:
+	if root is TileMapLayer:
+		return root as TileMapLayer
+
+	for child in root.get_children():
+		var child_node := child as Node
+		if child_node == null:
+			continue
+		var found := _find_tilemap_layer(child_node)
+		if found != null:
+			return found
+
+	return null
+
+
+func _clear_active_room() -> void:
+	_active_room_tilemap = null
+	if is_instance_valid(_active_room_root):
+		_active_room_root.queue_free()
+	_active_room_root = null
 
 
 func _create_doors(open_dirs: Array[Vector2i]) -> void:
@@ -279,18 +335,3 @@ func _clear_doors() -> void:
 		if is_instance_valid(area):
 			area.queue_free()
 	_door_areas.clear()
-
-
-
-static func _inward_direction(door_dir: Vector2i) -> Vector2i:
-	if door_dir == Vector2i.UP:
-		return Vector2i.DOWN
-	if door_dir == Vector2i.DOWN:
-		return Vector2i.UP
-	if door_dir == Vector2i.LEFT:
-		return Vector2i.RIGHT
-	return Vector2i.LEFT
-
-	
-func _in_room(pos: Vector2i) -> bool:
-	return pos.x >= 0 and pos.x < ROOM_WIDTH and pos.y >= 0 and pos.y < ROOM_HEIGHT
