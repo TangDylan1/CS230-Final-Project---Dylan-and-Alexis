@@ -8,36 +8,36 @@ extends Node2D
 ##   Space             — regenerate the entire dungeon
 ##   M                 — toggle developer minimap
 
-# Room dimensions in pixels (20 tiles * 32px, 11 tiles * 32px).
-const ROOM_PIXEL_SIZE := Vector2(640, 352)
-const ROOM_WIDTH := 20
-const ROOM_HEIGHT := 11
+# Room dimensions in pixels (22 tiles * 32px, 15 tiles * 32px).
+const ROOM_PIXEL_SIZE := Vector2(704, 480)
+const ROOM_WIDTH := 22
+const ROOM_HEIGHT := 15
 
 # When the player enters a door going direction D, they spawn at this
 # room-local position in the TARGET room (near the opposite door, pushed
 # one tile inward so they don't immediately re-trigger the door).
 const SPAWN_OFFSETS := {
-	Vector2i.UP:    Vector2(320, 304),
-	Vector2i.DOWN:  Vector2(320, 48),
-	Vector2i.LEFT:  Vector2(592, 160),
-	Vector2i.RIGHT: Vector2(48, 160),
+	Vector2i.UP:    Vector2(352, 432),
+	Vector2i.DOWN:  Vector2(352, 48),
+	Vector2i.LEFT:  Vector2(656, 224),
+	Vector2i.RIGHT: Vector2(48, 224),
 }
 
 # Door openings are 2 tiles wide, centered on each wall.
 # Each entry maps a direction to the tile coords that get carved open.
 const DOOR_TILES := {
-	Vector2i.UP:    [Vector2i(9, 0),  Vector2i(10, 0)],
-	Vector2i.DOWN:  [Vector2i(9, 10), Vector2i(10, 10)],
-	Vector2i.LEFT:  [Vector2i(0, 4),  Vector2i(0, 5)],
-	Vector2i.RIGHT: [Vector2i(19, 4), Vector2i(19, 5)],
+	Vector2i.UP:    [Vector2i(10, 0),  Vector2i(11, 0)],
+	Vector2i.DOWN:  [Vector2i(10, 14), Vector2i(11, 14)],
+	Vector2i.LEFT:  [Vector2i(0, 6),   Vector2i(0, 7)],
+	Vector2i.RIGHT: [Vector2i(21, 6),  Vector2i(21, 7)],
 }
 
 # Pixel center of each door opening (for placing the Area2D trigger).
 const DOOR_CENTERS := {
-	Vector2i.UP:    Vector2(320, 16),
-	Vector2i.DOWN:  Vector2(320, 336),
-	Vector2i.LEFT:  Vector2(16, 160),
-	Vector2i.RIGHT: Vector2(624, 160),
+	Vector2i.UP:    Vector2(352, 16),
+	Vector2i.DOWN:  Vector2(352, 464),
+	Vector2i.LEFT:  Vector2(16, 224),
+	Vector2i.RIGHT: Vector2(688, 224),
 }
 
 
