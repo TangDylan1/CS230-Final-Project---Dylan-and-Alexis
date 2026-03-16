@@ -12,6 +12,10 @@ var dash_cooldown := 0.0
 @export var ACCELERATION := 50.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var katana: Node2D = $Katana
+@onready var sword_animation: AnimationPlayer = $Katana/Node2D/AnimationPlayer
+@onready var slash_animation: AnimatedSprite2D = $Katana/SlashEffect
+
 
 # Set to true during room transitions to prevent movement.
 var frozen := false
@@ -27,6 +31,22 @@ func _process(_delta: float) -> void:
 	if dash_cooldown > 0.0:
 		dash_cooldown -= _delta
 
+	# Rotate and flip katana based on mouse dir
+	if not sword_animation.is_playing(): # Dont let the player swing in a circle lol
+		katana.rotation = mouse_direction.angle()
+		if katana.scale.y == 1  and mouse_direction.x < 0:
+			katana.scale.y = -1
+		elif katana.scale.y == -1 and mouse_direction.x > 0:
+			katana.scale.y = 1
+
+	if Input.is_action_just_pressed("ui_attack") and not sword_animation.is_playing():
+		sword_animation.play("attack")
+		slash_animation.visible = true
+		slash_animation.play("default")
+	
+	# Hide katana slash after animation finishes
+	if slash_animation.visible and not slash_animation.is_playing():
+		slash_animation.visible = false
 
 func _physics_process(_delta: float) -> void:
 	if frozen:

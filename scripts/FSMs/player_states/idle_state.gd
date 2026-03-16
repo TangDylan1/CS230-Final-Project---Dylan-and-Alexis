@@ -19,5 +19,5 @@ func physics_update(_delta: float) -> void:
 	if character.get_input_direction() != Vector2.ZERO:
 		fsm.change_state("walkstate")
 
-	if Input.is_action_just_pressed("dash") and character.dash_cooldown <= 0.0:
+	if Input.is_action_just_pressed("ui_dash") and character.dash_cooldown <= 0.0:
 		fsm.change_state("dashstate")

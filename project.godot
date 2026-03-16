@@ -19,18 +19,31 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=704
 window/size/viewport_height=480
-window/stretch/mode="viewport"
+window/stretch/mode="canvas_items"
 
 [input]
 
-dash={
+ui_dash={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194325,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+ui_attack={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(358, 20),"global_position":Vector2(367, 68),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
+
+[layer_names]
+
+2d_render/layer_1="World"
+2d_render/layer_2="Player"
+2d_render/layer_3="Enemy"
 
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
 environment/defaults/default_clear_color=Color(0.06720009, 0.06721379, 0.14163193, 1)
 occlusion_culling/use_occlusion_culling=true
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

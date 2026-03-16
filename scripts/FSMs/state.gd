@@ -10,11 +10,11 @@ func enter() -> void: # Called on state enter
 func exit() -> void: # Called on state exit
 	pass
 
-func update(delta: float): # Called every frame 
+func update(_delta: float): # Called every frame 
 	pass
 
-func physics_update(delta: float): # Called every physics frame 
+func physics_update(_delta: float): # Called every physics frame 
 	pass
 
-func handle_input(event: InputEvent): # Called when an input event is received
+func handle_input(_event: InputEvent): # Called when an input event is received
 	pass

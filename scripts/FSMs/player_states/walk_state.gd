@@ -25,7 +25,7 @@ func physics_update(_delta: float):
 		fsm.change_state("idlestate")
 		return
 
-	elif Input.is_action_just_pressed("dash") and character.dash_cooldown <= 0.0:
+	elif Input.is_action_just_pressed("ui_dash") and character.dash_cooldown <= 0.0:
 		fsm.change_state("dashstate")
 
 
