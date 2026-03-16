@@ -20,27 +20,20 @@ func _physics_process(_delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	move()
 	move_and_slide()
 	velocity = lerp(velocity, Vector2.ZERO, FRICTION)
 
-func move() -> void:
-	direction = Vector2.ZERO
-	if Input.is_action_pressed("ui_left") or Input.is_physical_key_pressed(KEY_A):
-		direction.x -= 1
-		sprite.flip_h = true
-	if Input.is_action_pressed("ui_right") or Input.is_physical_key_pressed(KEY_D):
-		direction.x += 1
-		sprite.flip_h = false
-	if Input.is_action_pressed("ui_up") or Input.is_physical_key_pressed(KEY_W):
-		direction.y -= 1
-	if Input.is_action_pressed("ui_down") or Input.is_physical_key_pressed(KEY_S):
-		direction.y += 1
 
-	direction = direction.normalized()
-	velocity += direction * ACCELERATION
-	# clamp velocity, by vector2d parts
-	velocity = Vector2(
-		clamp(velocity.x, -MAX_SPEED, MAX_SPEED),
-		clamp(velocity.y, -MAX_SPEED, MAX_SPEED)
-	)
+# Return normalized player input direction
+func get_input_direction() -> Vector2:
+	var input_direction := Vector2.ZERO
+	if Input.is_action_pressed("ui_left") or Input.is_physical_key_pressed(KEY_A):
+		input_direction.x -= 1
+	if Input.is_action_pressed("ui_right") or Input.is_physical_key_pressed(KEY_D):
+		input_direction.x += 1
+	if Input.is_action_pressed("ui_up") or Input.is_physical_key_pressed(KEY_W):
+		input_direction.y -= 1
+	if Input.is_action_pressed("ui_down") or Input.is_physical_key_pressed(KEY_S):
+		input_direction.y += 1
+
+	return input_direction.normalized()
