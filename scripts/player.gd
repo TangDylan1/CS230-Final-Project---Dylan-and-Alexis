@@ -19,15 +19,6 @@ func _physics_process(_delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	var input := Vector2.ZERO
-	if Input.is_action_pressed("ui_left") or Input.is_physical_key_pressed(KEY_A):
-		input.x -= 1.0
-	if Input.is_action_pressed("ui_right") or Input.is_physical_key_pressed(KEY_D):
-		input.x += 1.0
-	if Input.is_action_pressed("ui_up") or Input.is_physical_key_pressed(KEY_W):
-		input.y -= 1.0
-	if Input.is_action_pressed("ui_down") or Input.is_physical_key_pressed(KEY_S):
-		input.y += 1.0
-
-	velocity = input.limit_length(1.0) * SPEED
+	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	velocity = input * SPEED
 	move_and_slide()

@@ -98,6 +98,12 @@ var _room_container: Node2D
 var _active_room_root: Node2D
 var _active_room_tilemap: TileMapLayer
 
+var _pause_menu: Node
+var _shop_menu: Node
+var _game_over_menu: Node
+var _game_win_menu: Node
+var _shop_prompt_label: Label
+
 @onready var _camera: Camera2D = $Camera2D
 @onready var _fade: ColorRect = $TransitionLayer/FadeOverlay
 @onready var _tilemap: TileMapLayer = $TileMapLayer
@@ -114,6 +120,8 @@ func _ready() -> void:
 	add_child(_room_container)
 	move_child(_room_container, 0)
 
+	_setup_menus()
+	_setup_shop_prompt()
 	_generate_dungeon()
 
 
@@ -146,6 +154,7 @@ func _generate_dungeon() -> void:
 
 	_spawn_player()
 	_update_minimap()
+	_update_shop_prompt()
 
 
 func _spawn_player() -> void:
@@ -168,10 +177,12 @@ func _room_center() -> Vector2:
 func _unhandled_input(event: InputEvent) -> void:
 	if _transitioning:
 		return
-	if event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("regenerate"):
 		_regenerate()
-	elif event is InputEventKey and event.pressed and event.keycode == KEY_M:
+	elif event.is_action_pressed("minimap_toggle"):
 		$MinimapLayer.visible = not $MinimapLayer.visible
+	elif event.is_action_pressed("interact"):
+		_try_shop_interact()
 
 
 func _regenerate() -> void:
@@ -221,6 +232,7 @@ func _transition_to(target_cell: Vector2i, entered_dir: Vector2i) -> void:
 		_player.position = SPAWN_OFFSETS[entered_dir]
 
 	_update_minimap()
+	_update_shop_prompt()
 
 	# Fade back in.
 	tween = create_tween()
@@ -360,3 +372,63 @@ func _clear_doors() -> void:
 		if is_instance_valid(area):
 			area.queue_free()
 	_door_areas.clear()
+
+
+# --------------------------------------------------------------------------
+# Menu overlays
+# --------------------------------------------------------------------------
+
+func _setup_menus() -> void:
+	_pause_menu = preload("res://scenes/menus/pause_menu.tscn").instantiate()
+	add_child(_pause_menu)
+
+	_shop_menu = preload("res://scenes/menus/shop_menu.tscn").instantiate()
+	add_child(_shop_menu)
+
+	_game_over_menu = preload("res://scenes/menus/game_over.tscn").instantiate()
+	add_child(_game_over_menu)
+
+	_game_win_menu = preload("res://scenes/menus/game_win.tscn").instantiate()
+	add_child(_game_win_menu)
+
+
+func _setup_shop_prompt() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 5
+	layer.name = "ShopPromptLayer"
+	add_child(layer)
+
+	var wrapper := Control.new()
+	wrapper.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(wrapper)
+
+	_shop_prompt_label = Label.new()
+	_shop_prompt_label.anchor_left = 0.5
+	_shop_prompt_label.anchor_right = 0.5
+	_shop_prompt_label.anchor_top = 1.0
+	_shop_prompt_label.anchor_bottom = 1.0
+	_shop_prompt_label.offset_left = -200
+	_shop_prompt_label.offset_right = 200
+	_shop_prompt_label.offset_top = -50
+	_shop_prompt_label.offset_bottom = -30
+	_shop_prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_shop_prompt_label.add_theme_font_size_override("font_size", 12)
+	_shop_prompt_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.4))
+	_shop_prompt_label.visible = false
+	wrapper.add_child(_shop_prompt_label)
+
+
+func _update_shop_prompt() -> void:
+	if not _shop_prompt_label:
+		return
+	var is_shop: bool = _layout.get(_current_cell, -1) == DungeonGenerator.RoomType.SHOP
+	_shop_prompt_label.visible = is_shop
+	if is_shop:
+		var key_name: String = SettingsManager.get_action_key_name("interact")
+		_shop_prompt_label.text = "Press " + key_name + " to talk to the Shopkeeper"
+
+
+func _try_shop_interact() -> void:
+	if _layout.get(_current_cell, -1) == DungeonGenerator.RoomType.SHOP:
+		_shop_menu.open_shop()
