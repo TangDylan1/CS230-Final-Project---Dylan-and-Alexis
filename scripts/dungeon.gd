@@ -99,6 +99,7 @@ var _active_room_root: Node2D
 var _active_room_tilemap: TileMapLayer
 var _room_enemies: Array[Node] = []
 var _coin_label: Label
+var _cleared_rooms: Dictionary = {}    # cell -> bool, true if enemies cleared once
 
 const ENEMY_SCENES := {
 	"soldier": preload("res://scenes/enemies/soldier_melee.tscn"),
@@ -139,6 +140,7 @@ func _generate_dungeon() -> void:
 	_layout = _generator.generate(grid_size, target_rooms)
 	_room_scenes.clear()
 	_room_open_dirs.clear()
+	_cleared_rooms.clear()
 
 	for cell_key in _layout.keys():
 		var cell: Vector2i = cell_key
@@ -395,6 +397,10 @@ func _spawn_enemies_for_room(cell: Vector2i) -> void:
 	]:
 		return
 
+	# If this room has been cleared before, never respawn enemies.
+	if _cleared_rooms.get(cell, false):
+		return
+
 	var total := randi_range(MIN_ENEMIES, MAX_ENEMIES)
 	var type_counts := {}
 	for key in ENEMY_KEYS:
@@ -414,6 +420,11 @@ func _spawn_enemies_for_room(cell: Vector2i) -> void:
 		var enemy := scene.instantiate()
 		add_child(enemy)
 
+		# Track lifecycle so we can mark rooms as cleared.
+		# Use an inline lambda so the handler receives exactly (cell, enemy).
+		if enemy.has_signal("died"):
+			enemy.died.connect(func(e): _on_enemy_died(cell, e))
+
 		# Random position in room interior (avoid walls near edges)
 		var margin := 48.0
 		var ex := randf_range(margin, ROOM_PIXEL_SIZE.x - margin)
@@ -421,6 +432,24 @@ func _spawn_enemies_for_room(cell: Vector2i) -> void:
 		enemy.position = Vector2(ex, ey)
 
 		_room_enemies.append(enemy)
+
+
+func _on_enemy_died(cell: Vector2i, enemy: Node) -> void:
+	# Remove from current room enemy list.
+	for i in range(_room_enemies.size()):
+		if _room_enemies[i] == enemy:
+			_room_enemies.remove_at(i)
+			break
+
+	# If no living enemies remain in this cell, mark as cleared.
+	var any_alive := false
+	for e in _room_enemies:
+		if is_instance_valid(e) and e.get_parent() == self:
+			any_alive = true
+			break
+
+	if not any_alive:
+		_cleared_rooms[cell] = true
 
 
 func _clear_room_enemies() -> void:
@@ -459,7 +488,7 @@ func _setup_coin_hud() -> void:
 	_coin_label.anchor_top = 0.0
 	_coin_label.offset_left = -140
 	_coin_label.offset_right = -8
-	_coin_label.offset_top = 60
+	_coin_label.offset_top = 88
 	hud_layer.add_child(_coin_label)
 
 	var gm := get_node_or_null("/root/GameManager")

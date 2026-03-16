@@ -2,7 +2,7 @@ extends Area2D
 
 const RADIUS := 5.0
 const MAGNET_RADIUS := 96.0
-const MAGNET_SPEED := 260.0
+const MAGNET_SPEED := 520.0
 
 @onready var _player: Node2D = null
 
