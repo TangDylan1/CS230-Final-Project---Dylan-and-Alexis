@@ -9,7 +9,7 @@ var frozen := false
 var dash_velocity := Vector2.ZERO
 var direction := Vector2.ZERO
 var dash_cooldown := 0.0
-var active_attack := String("katana")
+var active_attack := String("throwing_star")
 var star_timer := 0.0
 var star_spawn := false
 

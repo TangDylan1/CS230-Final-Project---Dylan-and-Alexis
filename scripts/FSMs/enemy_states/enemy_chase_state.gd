@@ -1,6 +1,8 @@
 extends State
 class_name EnemyChaseState
 
+
+
 func enter() -> void:
 	pass
 
@@ -11,9 +13,9 @@ func physics_update(delta: float) -> void:
 
 	var dist := enemy.distance_to_player()
 
-	if dist > enemy.aggro_range * 1.3:
-		fsm.change_state("enemyidlestate")
-		return
+	# if dist > enemy.aggro_range * 1.3:
+	# 	fsm.change_state("enemyidlestate")
+	# 	return
 
 	if dist <= enemy.attack_range:
 		fsm.change_state("enemyattackstate")

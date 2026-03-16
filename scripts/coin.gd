@@ -11,7 +11,7 @@ func _ready() -> void:
 	add_to_group("coins")
 
 	monitoring = false
-	monitorable = true
+	set_deferred("monitorable", true)
 	# Small delay before collectible to let scatter animation play
 	set_deferred("monitoring", true)
 
@@ -19,7 +19,7 @@ func _ready() -> void:
 	var circle := CircleShape2D.new()
 	circle.radius = RADIUS + 2.0
 	shape.shape = circle
-	add_child(shape)
+	call_deferred("add_child", shape)
 
 	body_entered.connect(_on_body_entered)
 

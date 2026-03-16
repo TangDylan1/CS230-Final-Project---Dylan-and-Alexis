@@ -26,6 +26,7 @@ var attack_timer: float = 0.0
 var frozen: bool = false
 var _wobble_time: float = 0.0
 var _is_dead: bool = false
+var seen_player: bool = false
 
 const COIN_SCENE_PATH := "res://scenes/coin.tscn"
 

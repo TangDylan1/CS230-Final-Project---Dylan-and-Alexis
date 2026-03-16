@@ -53,7 +53,7 @@ func _melee_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
 			fsm.change_state("enemychasestate")
 
 
-func _ranged_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
+func _ranged_attack(enemy: EnemyBase, _delta: float, _dist: float) -> void:
 	# Ranged enemies now have infinite detection; just stand and shoot.
 	if _cooldown_timer >= enemy.attack_cooldown:
 		_fire_projectile(enemy)
