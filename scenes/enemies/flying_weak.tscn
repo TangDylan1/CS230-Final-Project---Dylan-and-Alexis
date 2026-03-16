@@ -1,18 +1,54 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=14 format=3 uid="uid://7bsmg115yer3"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_base.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/FSMs/baseFSM.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+[ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
+[ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://bvgvedcop576x" path="res://assets/sprites/enemies/bat.png" id="2_up4ie"]
+[ext_resource type="Script" uid="uid://bhgi13n717tut" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
+[ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
+[ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
+[ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
 
-[sub_resource type="CircleShape2D" id="cs1"]
-radius = 8.0
+[sub_resource type="AtlasTexture" id="AtlasTexture_541si"]
+atlas = ExtResource("2_up4ie")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_adh4m"]
+atlas = ExtResource("2_up4ie")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b0iyn"]
+atlas = ExtResource("2_up4ie")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4cifr"]
+atlas = ExtResource("2_up4ie")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_m14nx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_541si")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_adh4m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b0iyn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4cifr")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_up4ie"]
 
 [node name="FlyingWeak" type="CharacterBody2D"]
+z_index = 1
 collision_layer = 4
-collision_mask = 1
 script = ExtResource("1")
 enemy_type = 2
 max_health = 2
@@ -24,11 +60,20 @@ coin_min = 2
 coin_max = 3
 draw_color = Color(0.95, 0.9, 0.15, 1)
 draw_radius = 8.0
+draw_circles = false
 wobble_amplitude = 0.6
 wobble_speed = 6.0
 
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_m14nx")
+autoplay = "default"
+frame_progress = 0.522382
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("cs1")
+position = Vector2(0, -3.39)
+rotation = -1.5865043
+shape = SubResource("CapsuleShape2D_up4ie")
 
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("2")

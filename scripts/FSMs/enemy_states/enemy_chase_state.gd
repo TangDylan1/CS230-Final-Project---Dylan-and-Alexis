@@ -1,13 +1,12 @@
 extends State
 class_name EnemyChaseState
 
-
-
 func enter() -> void:
 	pass
 
 func physics_update(delta: float) -> void:
 	var enemy := fsm.get_parent() as EnemyBase
+	var sprite := enemy.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
 	if enemy == null or enemy.frozen:
 		return
 
@@ -22,6 +21,13 @@ func physics_update(delta: float) -> void:
 		return
 
 	var dir := enemy.direction_to_player()
+	
+	# Flip enemy based on player dir
+	if sprite:
+		if dir.x > 0:
+			sprite.flip_h = false
+		elif dir.x < 0:
+			sprite.flip_h = true
 
 	# Flying enemies get erratic wobble
 	if enemy.enemy_type == EnemyBase.EnemyType.FLYING:

@@ -16,6 +16,7 @@ enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 @export var coin_max: int = 6
 @export var draw_color: Color = Color.RED
 @export var draw_radius: float = 10.0
+@export var draw_circles: bool = true
 
 # Wobble for flying enemies
 @export var wobble_amplitude: float = 0.0
@@ -38,7 +39,8 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	draw_circle(Vector2.ZERO, draw_radius, draw_color)
+	if draw_circles:
+		draw_circle(Vector2.ZERO, draw_radius, draw_color)
 
 
 func get_player() -> Node2D:

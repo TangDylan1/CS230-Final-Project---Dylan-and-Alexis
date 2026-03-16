@@ -1,31 +1,106 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=19 format=3 uid="uid://wwutwhvbcorv"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_base.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/FSMs/baseFSM.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+[ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
+[ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://khu8wi6ihy" path="res://assets/sprites/enemies/oni_r_walk.png" id="2_sfmmy"]
+[ext_resource type="Script" uid="uid://bhgi13n717tut" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
+[ext_resource type="Texture2D" uid="uid://dsxqy117dw5mm" path="res://assets/sprites/enemies/oni_r_idle.png" id="3_sf1ie"]
+[ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
+[ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
+[ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8uib7"]
+atlas = ExtResource("2_sfmmy")
+region = Rect2(0, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hg0of"]
+atlas = ExtResource("2_sfmmy")
+region = Rect2(34, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jx3ev"]
+atlas = ExtResource("2_sfmmy")
+region = Rect2(68, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_huelb"]
+atlas = ExtResource("2_sfmmy")
+region = Rect2(102, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0bwff"]
+atlas = ExtResource("3_sf1ie")
+region = Rect2(0, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_14mm2"]
+atlas = ExtResource("3_sf1ie")
+region = Rect2(34, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j6ioj"]
+atlas = ExtResource("3_sf1ie")
+region = Rect2(68, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_41wn5"]
+atlas = ExtResource("3_sf1ie")
+region = Rect2(102, 0, 34, 34)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jx3ev"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8uib7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hg0of")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jx3ev")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_huelb")
+}],
+"loop": true,
+"name": &"chase",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0bwff")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_14mm2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j6ioj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_41wn5")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 7.0
+}]
 
 [sub_resource type="CircleShape2D" id="cs1"]
-radius = 10.0
+radius = 16.0
 
 [node name="SoldierMelee" type="CharacterBody2D"]
 collision_layer = 4
-collision_mask = 1
 script = ExtResource("1")
-enemy_type = 0
-max_health = 3
 move_speed = 90.0
 aggro_range = 200.0
 attack_range = 22.0
 attack_cooldown = 0.8
-coin_min = 4
-coin_max = 6
 draw_color = Color(0.9, 0.15, 0.15, 1)
-draw_radius = 10.0
+draw_circles = false
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -15)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_jx3ev")
+animation = &"chase"
+autoplay = "idle"
+frame_progress = 0.5207404
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
 shape = SubResource("cs1")
 
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
