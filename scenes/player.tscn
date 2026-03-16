@@ -192,7 +192,6 @@ script = ExtResource("8_smehm")
 metadata/_custom_type_script = "uid://cgl2jh1bl4dlk"
 
 [node name="Katana" type="Node2D" parent="."]
-visible = false
 
 [node name="SlashEffect" type="AnimatedSprite2D" parent="Katana"]
 texture_filter = 1
