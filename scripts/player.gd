@@ -4,6 +4,9 @@ extends CharacterBody2D
 const MAX_SPEED := 300.0
 const DASH_SPEED := 700.0
 const STAR_PROJECTILE_SCENE := preload("res://scenes/star.tscn")
+const PLAYER_LAYER := 3
+const WORLD_LAYER := 1
+const ENEMY_LAYER := 4
 
 var frozen := false
 var dash_velocity := Vector2.ZERO
@@ -26,6 +29,9 @@ var star_spawn := false
 
 func _ready() -> void:
 	add_to_group("player")
+	set_collision_layer_value(PLAYER_LAYER, true)
+	set_collision_mask_value(WORLD_LAYER, true)
+	set_collision_mask_value(ENEMY_LAYER, true)
 
 
 func update_active_attack():
