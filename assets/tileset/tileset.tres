@@ -1,6 +1,9 @@
-[gd_resource type="TileSet" load_steps=2 format=3 uid="uid://ck1gfpteisar1"]
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://ck1gfpteisar1"]
+
+[ext_resource type="Texture2D" uid="uid://8ryh31ld5bq" path="res://assets/tileset/GuttyKreum_ForestGraveyard/Tilemaps/Fulltilemap.png" id="1_qwp6l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wgc32"]
+texture = ExtResource("1_qwp6l")
 3:0/0 = 0
 6:0/0 = 0
 7:0/0 = 0
