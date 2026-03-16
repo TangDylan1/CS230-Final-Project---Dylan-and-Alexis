@@ -5,7 +5,7 @@ const MAX_SPEED := 300.0
 const DASH_SPEED := 700.0
 const STAR_PROJECTILE_SCENE := preload("res://scenes/star.tscn")
 
-var frozen := false # Set to true during room transitions to prevent movement.
+var frozen := false
 var dash_velocity := Vector2.ZERO
 var direction := Vector2.ZERO
 var dash_cooldown := 0.0
@@ -22,6 +22,11 @@ var star_spawn := false
 @onready var slash_animation: AnimatedSprite2D = $Katana/SlashEffect
 @onready var throwing_star: Node2D = $ThrowingStar
 @onready var throwing_star_animation: AnimationPlayer = $ThrowingStar/StarNode2D/StarAnimation
+
+
+func _ready() -> void:
+	add_to_group("player")
+
 
 func update_active_attack():
 	if active_attack == "katana":
@@ -65,6 +70,7 @@ func _process(_delta: float) -> void:
 			sword_animation.play("attack")
 			slash_animation.visible = true
 			slash_animation.play("default")
+			_katana_hit(mouse_direction)
 		
 		# Hide katana slash after animation finishes
 		if slash_animation.visible and not slash_animation.is_playing():
@@ -123,3 +129,16 @@ func get_input_direction() -> Vector2:
 func play_sprite_animation(anim: String) -> void:
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
 		sprite.play(anim)
+
+
+func _katana_hit(attack_dir: Vector2) -> void:
+	var hit_range := 80.0
+	var hit_angle := PI / 2.5
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		var to_enemy: Vector2 = enemy.global_position - global_position
+		if to_enemy.length() > hit_range:
+			continue
+		if to_enemy.normalized().dot(attack_dir.normalized()) < cos(hit_angle):
+			continue
+		if enemy.has_method("apply_damage"):
+			enemy.apply_damage(2)

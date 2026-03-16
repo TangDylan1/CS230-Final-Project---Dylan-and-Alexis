@@ -22,5 +22,8 @@ func launch(dir: Vector2) -> void:
 	body.linear_velocity = dir * speed
 
 func _on_body_entered(_hit_body: Node) -> void:
-	if _hit_body != player:
+	if _hit_body is EnemyBase:
+		_hit_body.apply_damage(1)
+		queue_free()
+	elif _hit_body != player:
 		queue_free()

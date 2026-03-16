@@ -15,6 +15,10 @@ run/main_scene="uid://dldg71rthjt4f"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameManager="*res://scripts/game_manager.gd"
+
 [display]
 
 window/size/viewport_width=704
@@ -39,6 +43,9 @@ ui_attack={
 2d_render/layer_1="World"
 2d_render/layer_2="Player"
 2d_render/layer_3="Enemy"
+2d_physics/layer_1="World"
+2d_physics/layer_2="Player"
+2d_physics/layer_3="Enemy"
 
 [rendering]
 

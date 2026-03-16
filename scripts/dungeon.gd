@@ -97,6 +97,19 @@ var _room_open_dirs: Dictionary = {}   # for each cell, store the open direction
 var _room_container: Node2D
 var _active_room_root: Node2D
 var _active_room_tilemap: TileMapLayer
+var _room_enemies: Array[Node] = []
+var _coin_label: Label
+
+const ENEMY_SCENES := {
+	"soldier": preload("res://scenes/enemies/soldier_melee.tscn"),
+	"ranged": preload("res://scenes/enemies/ranged_static.tscn"),
+	"flying": preload("res://scenes/enemies/flying_weak.tscn"),
+	"tank": preload("res://scenes/enemies/tank_slow.tscn"),
+}
+const ENEMY_KEYS := ["soldier", "ranged", "flying", "tank"]
+const MAX_PER_TYPE := 3
+const MIN_ENEMIES := 3
+const MAX_ENEMIES := 6
 
 @onready var _camera: Camera2D = $Camera2D
 @onready var _fade: ColorRect = $TransitionLayer/FadeOverlay
@@ -114,6 +127,7 @@ func _ready() -> void:
 	add_child(_room_container)
 	move_child(_room_container, 0)
 
+	_setup_coin_hud()
 	_generate_dungeon()
 
 
@@ -176,6 +190,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _regenerate() -> void:
 	_clear_doors()
+	_clear_room_enemies()
 	_clear_active_room()
 	if _tilemap:
 		_tilemap.clear()
@@ -247,9 +262,11 @@ func _update_minimap() -> void:
 func _show_current_room() -> void:
 	var open_dirs := _get_open_dirs(_current_cell)
 
+	_clear_room_enemies()
 	_spawn_room_scene(_current_cell)
 	_apply_door_tiles(open_dirs)
 	_create_doors(open_dirs)
+	_spawn_enemies_for_room(_current_cell)
 
 
 func _get_open_dirs(cell: Vector2i) -> Array[Vector2i]:
@@ -360,3 +377,96 @@ func _clear_doors() -> void:
 		if is_instance_valid(area):
 			area.queue_free()
 	_door_areas.clear()
+
+
+# --------------------------------------------------------------------------
+# Enemy spawning
+# --------------------------------------------------------------------------
+
+func _spawn_enemies_for_room(cell: Vector2i) -> void:
+	var room_type: int = _layout.get(cell, DungeonGenerator.RoomType.NORMAL)
+	# Skip spawning in special rooms
+	if room_type in [
+		DungeonGenerator.RoomType.START,
+		DungeonGenerator.RoomType.BOSS,
+		DungeonGenerator.RoomType.SHOP,
+		DungeonGenerator.RoomType.TREASURE,
+		DungeonGenerator.RoomType.SECRET,
+	]:
+		return
+
+	var total := randi_range(MIN_ENEMIES, MAX_ENEMIES)
+	var type_counts := {}
+	for key in ENEMY_KEYS:
+		type_counts[key] = 0
+
+	for i in total:
+		var available: Array[String] = []
+		for key in ENEMY_KEYS:
+			if type_counts[key] < MAX_PER_TYPE:
+				available.append(key)
+		if available.is_empty():
+			break
+		var key: String = available[randi() % available.size()]
+		type_counts[key] += 1
+
+		var scene: PackedScene = ENEMY_SCENES[key]
+		var enemy := scene.instantiate()
+		add_child(enemy)
+
+		# Random position in room interior (avoid walls near edges)
+		var margin := 48.0
+		var ex := randf_range(margin, ROOM_PIXEL_SIZE.x - margin)
+		var ey := randf_range(margin, ROOM_PIXEL_SIZE.y - margin)
+		enemy.position = Vector2(ex, ey)
+
+		_room_enemies.append(enemy)
+
+
+func _clear_room_enemies() -> void:
+	for enemy in _room_enemies:
+		if is_instance_valid(enemy):
+			enemy.queue_free()
+	_room_enemies.clear()
+	# Also clean up any scattered coins and enemy projectiles from the previous room
+	for node in get_tree().get_nodes_in_group("coins"):
+		if is_instance_valid(node):
+			node.queue_free()
+	for proj in get_tree().get_nodes_in_group("enemy_projectiles"):
+		if is_instance_valid(proj):
+			proj.queue_free()
+
+
+# --------------------------------------------------------------------------
+# Coin HUD
+# --------------------------------------------------------------------------
+
+func _setup_coin_hud() -> void:
+	var hud_layer := CanvasLayer.new()
+	hud_layer.layer = 5
+	hud_layer.name = "CoinHUD"
+	add_child(hud_layer)
+
+	_coin_label = Label.new()
+	_coin_label.text = "Coins: 0"
+	_coin_label.add_theme_font_size_override("font_size", 16)
+	_coin_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
+	_coin_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	_coin_label.add_theme_constant_override("outline_size", 3)
+	_coin_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_coin_label.anchor_left = 1.0
+	_coin_label.anchor_right = 1.0
+	_coin_label.anchor_top = 0.0
+	_coin_label.offset_left = -140
+	_coin_label.offset_right = -8
+	_coin_label.offset_top = 60
+	hud_layer.add_child(_coin_label)
+
+	var gm := get_node_or_null("/root/GameManager")
+	if gm and gm.has_signal("coins_changed"):
+		gm.coins_changed.connect(_on_coins_changed)
+
+
+func _on_coins_changed(new_amount: int) -> void:
+	if _coin_label:
+		_coin_label.text = "Coins: %d" % new_amount
