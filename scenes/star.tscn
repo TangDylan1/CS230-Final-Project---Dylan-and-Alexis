@@ -1,0 +1,62 @@
+[gd_scene load_steps=7 format=3 uid="uid://b48r8v6yrbcft"]
+
+[ext_resource type="Script" uid="uid://3xmwwyjyabdl" path="res://scripts/weapons/star.gd" id="1_j6vao"]
+[ext_resource type="Texture2D" uid="uid://da4xmpylapsqd" path="res://assets/sprites/player/weapons/star.png" id="2_ef0hr"]
+
+[sub_resource type="Animation" id="Animation_8d8bx"]
+resource_name = "spinning"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.99626714),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.2831855]
+}
+
+[sub_resource type="Animation" id="Animation_8lrp4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_sxbdi"]
+_data = {
+&"RESET": SubResource("Animation_8lrp4"),
+&"spinning": SubResource("Animation_8d8bx")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pexwv"]
+radius = 16.0
+
+[node name="Star" type="Node2D"]
+script = ExtResource("1_j6vao")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
+scale = Vector2(2, 2)
+texture = ExtResource("2_ef0hr")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="RigidBody2D"]
+root_node = NodePath("../Sprite2D")
+libraries = {
+&"": SubResource("AnimationLibrary_sxbdi")
+}
+speed_scale = 1.593
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+shape = SubResource("CircleShape2D_pexwv")

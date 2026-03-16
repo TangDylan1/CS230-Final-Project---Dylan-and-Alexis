@@ -3,26 +3,47 @@ extends CharacterBody2D
 
 const MAX_SPEED := 300.0
 const DASH_SPEED := 700.0
-var tween: Tween
+const STAR_PROJECTILE_SCENE := preload("res://scenes/star.tscn")
+
+var frozen := false # Set to true during room transitions to prevent movement.
 var dash_velocity := Vector2.ZERO
 var direction := Vector2.ZERO
 var dash_cooldown := 0.0
+var active_attack := String("katana")
+var star_timer := 0.0
+var star_spawn := false
 
 @export var FRICTION := 0.1
 @export var ACCELERATION := 50.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var katana: Node2D = $Katana
-@onready var sword_animation: AnimationPlayer = $Katana/Node2D/AnimationPlayer
+@onready var sword_animation: AnimationPlayer = $Katana/KatNode2D/SwordAnimation
 @onready var slash_animation: AnimatedSprite2D = $Katana/SlashEffect
+@onready var throwing_star: Node2D = $ThrowingStar
+@onready var throwing_star_animation: AnimationPlayer = $ThrowingStar/StarNode2D/StarAnimation
+
+func update_active_attack():
+	if active_attack == "katana":
+		katana.visible = true
+		throwing_star.visible = false
+	elif active_attack == "throwing_star":
+		katana.visible = false
+		throwing_star.visible = true
 
 
-# Set to true during room transitions to prevent movement.
-var frozen := false
+func throw_star(mouse_direction: Vector2) -> void:
+	var star = STAR_PROJECTILE_SCENE.instantiate()
+	get_tree().current_scene.add_child(star)
+	star.global_position = global_position + mouse_direction.normalized() * 24.0
+	star.launch(mouse_direction)
+
 
 func _process(_delta: float) -> void:
-	var mouse_direction := (get_global_mouse_position() - global_position).normalized()
+	update_active_attack()
 
+	# Flip player based on mouse dir
+	var mouse_direction := (get_global_mouse_position() - global_position).normalized()
 	if mouse_direction.x > 0:
 		sprite.flip_h = false
 	elif mouse_direction.x < 0:
@@ -31,23 +52,44 @@ func _process(_delta: float) -> void:
 	if dash_cooldown > 0.0:
 		dash_cooldown -= _delta
 
-	# Rotate and flip katana based on mouse dir
-	if not sword_animation.is_playing(): # Dont let the player swing in a circle lol
-		katana.rotation = mouse_direction.angle()
-		if katana.scale.y == 1  and mouse_direction.x < 0:
-			katana.scale.y = -1
-		elif katana.scale.y == -1 and mouse_direction.x > 0:
-			katana.scale.y = 1
+	if active_attack == "katana":
+		# Rotate and flip katana based on mouse dir
+		if not sword_animation.is_playing(): # Dont let the player swing in a circle lol
+			katana.rotation = mouse_direction.angle()
+			if katana.scale.y == 1  and mouse_direction.x < 0:
+				katana.scale.y = -1
+			elif katana.scale.y == -1 and mouse_direction.x > 0:
+				katana.scale.y = 1
 
-	if Input.is_action_just_pressed("ui_attack") and not sword_animation.is_playing():
-		sword_animation.play("attack")
-		slash_animation.visible = true
-		slash_animation.play("default")
+		if Input.is_action_just_pressed("ui_attack") and not sword_animation.is_playing():
+			sword_animation.play("attack")
+			slash_animation.visible = true
+			slash_animation.play("default")
+		
+		# Hide katana slash after animation finishes
+		if slash_animation.visible and not slash_animation.is_playing():
+			slash_animation.visible = false
 	
-	# Hide katana slash after animation finishes
-	if slash_animation.visible and not slash_animation.is_playing():
-		slash_animation.visible = false
+	elif active_attack == "throwing_star":
+		# Rotate and flip throwing star based on mouse dir
+		if not throwing_star_animation.is_playing(): # Dont let the player swing in a circle lol
+			throwing_star.rotation = mouse_direction.angle()
+			if throwing_star.scale.y == 1  and mouse_direction.x < 0:
+				throwing_star.scale.y = -1
+			elif throwing_star.scale.y == -1 and mouse_direction.x > 0:
+				throwing_star.scale.y = 1
 
+		if Input.is_action_just_pressed("ui_attack") and not throwing_star_animation.is_playing():
+			star_spawn = true
+			star_timer = 0.15
+			throwing_star_animation.play("attack")
+
+		if star_spawn:
+			star_timer -= _delta
+			if star_timer <= 0.0:
+				throw_star(mouse_direction)
+				star_spawn = false
+		
 func _physics_process(_delta: float) -> void:
 	if frozen:
 		velocity = Vector2.ZERO
