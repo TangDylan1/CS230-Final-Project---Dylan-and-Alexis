@@ -25,5 +25,13 @@ func restart_game() -> void:
 	get_tree().change_scene_to_file("res://scenes/dungeon.tscn")
 
 
+func add_coins(amount: int) -> void:
+	coins += amount
+
+
+func reset_coins() -> void:
+	coins = 0
+
+
 func quit_game() -> void:
 	get_tree().quit()
