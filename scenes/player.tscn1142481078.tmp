@@ -119,4 +119,5 @@ metadata/_custom_type_script = "uid://cvfrowgdh4fiu"
 
 [node name="DashState" type="Node" parent="FiniteStateMachine"]
 script = ExtResource("8_smehm")
+dash_duration = null
 metadata/_custom_type_script = "uid://cgl2jh1bl4dlk"
