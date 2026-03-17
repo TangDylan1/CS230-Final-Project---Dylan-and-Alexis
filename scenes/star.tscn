@@ -3,21 +3,6 @@
 [ext_resource type="Script" uid="uid://3xmwwyjyabdl" path="res://scripts/weapons/star.gd" id="1_j6vao"]
 [ext_resource type="Texture2D" uid="uid://da4xmpylapsqd" path="res://assets/sprites/player/weapons/star.png" id="2_ef0hr"]
 
-[sub_resource type="Animation" id="Animation_8d8bx"]
-resource_name = "spinning"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.99626714),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [0.0, 6.2831855]
-}
-
 [sub_resource type="Animation" id="Animation_8lrp4"]
 length = 0.001
 tracks/0/type = "value"
@@ -33,6 +18,21 @@ tracks/0/keys = {
 "values": [0.0]
 }
 
+[sub_resource type="Animation" id="Animation_8d8bx"]
+resource_name = "spinning"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.99626714),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.2831855]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sxbdi"]
 _data = {
 &"RESET": SubResource("Animation_8lrp4"),
@@ -46,6 +46,8 @@ radius = 16.0
 script = ExtResource("1_j6vao")
 
 [node name="RigidBody2D" type="RigidBody2D" parent="."]
+mass = 0.001
+gravity_scale = 0.0
 
 [node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
 scale = Vector2(2, 2)

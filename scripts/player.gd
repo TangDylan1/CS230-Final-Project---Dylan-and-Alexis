@@ -29,9 +29,6 @@ var max_health: int = 8
 var current_health: int = 8
 var _dead := false
 var _damage_cooldown: float = 0.0  # 1s iframe after taking damage
-var _damage_flash_timer: float = 0.0  # 0.5s red/white flash when hit
-var _damage_flash_interval: float = 0.08
-var _damage_flash_show_white: bool = true
 var knockback_velocity := Vector2.ZERO
 var knockback_timer := 0.0
 var swap_timer := 0.0
@@ -115,17 +112,7 @@ func _process(_delta: float) -> void:
 		dash_cooldown -= _delta
 	if _damage_cooldown > 0.0:
 		_damage_cooldown -= _delta
-	# Damage flash (white / normal like hearts)
-	if _damage_flash_timer > 0.0:
-		_damage_flash_timer -= _delta
-		var interval_elapsed := 0.5 - _damage_flash_timer
-		var toggle_count := int(interval_elapsed / _damage_flash_interval)
-		_damage_flash_show_white = (toggle_count % 2) == 0
-		if sprite:
-			sprite.modulate = Color(1.5, 1.5, 1.5) if _damage_flash_show_white else Color.WHITE
-	else:
-		if sprite and sprite.modulate != Color.WHITE:
-			sprite.modulate = Color.WHITE
+
 
 	if active_attack == "katana":
 		# Rotate and flip katana based on mouse dir
@@ -213,7 +200,7 @@ func play_sprite_animation(anim: String) -> void:
 		sprite.play(anim)
 
 
-func take_damage(amount: int) -> void:
+func apply_damage(amount: int) -> void:
 	if _dead:
 		return
 	if _damage_cooldown > 0.0:
@@ -221,10 +208,7 @@ func take_damage(amount: int) -> void:
 	var old_half := current_health
 	current_health = clampi(current_health - amount, 0, max_health)
 	_damage_cooldown = 0.5  # 0.5s invulnerability when hit
-	_damage_flash_timer = 0.5
-	_damage_flash_show_white = true
-	if sprite:
-		sprite.modulate = Color(1.5, 1.5, 1.5)  # Start with bright white flash
+	_flash_damage()
 	health_changed.emit(old_half, current_health)
 	if current_health <= 0:
 		_dead = true
@@ -252,6 +236,11 @@ func _katana_hit(attack_dir: Vector2) -> void:
 		if enemy.has_method("apply_damage"):
 			enemy.apply_damage(GameManager.get_katana_damage())
 
+
+func _flash_damage() -> void:
+	modulate = Color(10, 10, 10)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.15)
 
 # Force is knockback force, duration is how long the knockback lasts (used by enemy melee)
 func apply_knockback(force: Vector2, duration: float = 0.18) -> void:

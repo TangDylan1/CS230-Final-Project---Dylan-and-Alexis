@@ -87,6 +87,7 @@ const DOOR_CENTERS := {
 const WORLD_LAYER := 1
 const PLAYER_LAYER := 3
 const ENEMY_LAYER := 4
+const FURNITURE_LAYER := 5
 
 # Spawn validation: avoid spawning inside walls, obstacles, other enemies, or player.
 const SPAWN_CHECK_RADIUS := 24.0
@@ -580,7 +581,7 @@ func _is_spawn_position_valid(global_pos: Vector2) -> bool:
 	var params := PhysicsShapeQueryParameters2D.new()
 	params.shape = shape
 	params.transform = Transform2D(0.0, global_pos)
-	params.collision_mask = (1 << (WORLD_LAYER - 1)) | (1 << (PLAYER_LAYER - 1)) | (1 << (ENEMY_LAYER - 1))
+	params.collision_mask = WORLD_LAYER | PLAYER_LAYER | ENEMY_LAYER | FURNITURE_LAYER
 	var results := space_state.intersect_shape(params, 1)
 	return results.is_empty()
 
