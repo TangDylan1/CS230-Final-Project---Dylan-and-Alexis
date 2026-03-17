@@ -1,6 +1,5 @@
 extends Control
 
-
 func _ready() -> void:
 	var bg := ColorRect.new()
 	bg.color = Color(0.06, 0.06, 0.12, 1.0)
@@ -16,12 +15,55 @@ func _ready() -> void:
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	center.add_child(vbox)
 
-	var title := Label.new()
-	title.text = "SPIRITBREAKERS"
-	title.add_theme_font_size_override("font_size", 32)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_color_override("font_color", Color(0.95, 0.85, 0.55))
-	vbox.add_child(title)
+	# Transparent "frame" so the VBox always allocates space for the logo.
+	var logo_frame := MarginContainer.new()
+	logo_frame.add_theme_constant_override("margin_left", 20)
+	logo_frame.add_theme_constant_override("margin_right", 20)
+	logo_frame.add_theme_constant_override("margin_top", 10)
+	logo_frame.add_theme_constant_override("margin_bottom", 10)
+	logo_frame.custom_minimum_size = Vector2(720, 220)
+	logo_frame.size_flags_horizontal = Control.SIZE_FILL
+	logo_frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(logo_frame)
+
+	var logo := TextureRect.new()
+	var logo_tex: Texture2D = load("res://assets/ui/spiritbreakers_logo.png")
+	if logo_tex == null:
+		# If the importer metadata is broken, fall back to loading the raw file.
+		var img := Image.new()
+		var err := img.load("res://assets/ui/spiritbreakers_logo.png")
+		if err == OK:
+			logo_tex = ImageTexture.create_from_image(img)
+		else:
+			push_error("MainMenu: failed to load logo (err=%s) at res://assets/ui/spiritbreakers_logo.png" % str(err))
+
+	logo.texture = logo_tex
+	logo.expand_mode = TextureRect.EXPAND_FIT_WIDTH
+	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	logo.size_flags_horizontal = Control.SIZE_FILL
+	logo.size_flags_vertical = Control.SIZE_FILL
+	logo.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# The logo asset includes a solid black background; key it out so the menu bg shows through.
+	var logo_shader := Shader.new()
+	logo_shader.code = """
+shader_type canvas_item;
+
+uniform vec3 key_color : source_color = vec3(0.0, 0.0, 0.0);
+uniform float tolerance = 0.08;
+uniform float softness = 0.06;
+
+void fragment() {
+	vec4 tex = texture(TEXTURE, UV);
+	float d = distance(tex.rgb, key_color);
+	float a = smoothstep(tolerance - softness, tolerance + softness, d);
+	COLOR = vec4(tex.rgb, tex.a * a);
+}
+"""
+	var logo_mat := ShaderMaterial.new()
+	logo_mat.shader = logo_shader
+	logo.material = logo_mat
+	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	logo_frame.add_child(logo)
 
 	var spacer := Control.new()
 	spacer.custom_minimum_size.y = 30

@@ -342,7 +342,14 @@ scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_ur7pv")
 animation = &"idle_r"
 autoplay = "idle_r"
-frame_progress = 0.9729359
+frame_progress = 0.64475954
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+color = Color(0.72113866, 0.9530422, 0.9758802, 1)
+energy = 0.65
+shadow_enabled = true
+texture = ExtResource("2_g2els")
+texture_scale = 0.84
 
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("5_fjrip")
