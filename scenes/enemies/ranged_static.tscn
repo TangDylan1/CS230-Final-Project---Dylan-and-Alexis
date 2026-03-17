@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://b3vd1gp0c3hwm"]
+[gd_scene load_steps=25 format=3 uid="uid://b3vd1gp0c3hwm"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+[ext_resource type="AudioStream" uid="uid://5jwwgp6qvg7a" path="res://assets/SFX/01_Hurt_v1.wav" id="10_dkhuw"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_b0cd8"]
 atlas = ExtResource("2_4ah74")
@@ -121,8 +122,6 @@ attack_range = 220.0
 attack_cooldown = 1.5
 coin_min = 3
 coin_max = 4
-draw_color = Color(0.15, 0.8, 0.15, 1)
-draw_circles = false
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-1, -19)
@@ -156,3 +155,8 @@ scale = Vector2(0.63, 0.63)
 color = Color(1, 0.53999996, 0.53999996, 1)
 energy = 0.32
 texture = ExtResource("3_yc4lg")
+
+[node name="HurtSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("10_dkhuw")
+volume_db = 10.257
+pitch_scale = 0.72

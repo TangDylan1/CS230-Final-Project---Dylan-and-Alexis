@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://7bsmg115yer3"]
+[gd_scene load_steps=16 format=3 uid="uid://7bsmg115yer3"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
 [ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="8_541si"]
+[ext_resource type="AudioStream" uid="uid://5jwwgp6qvg7a" path="res://assets/SFX/01_Hurt_v1.wav" id="9_adh4m"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_541si"]
 atlas = ExtResource("2_up4ie")
@@ -58,9 +59,6 @@ attack_range = 20.0
 attack_cooldown = 0.6
 coin_min = 2
 coin_max = 3
-draw_color = Color(0.95, 0.9, 0.15, 1)
-draw_radius = 8.0
-draw_circles = false
 wobble_amplitude = 0.6
 wobble_speed = 6.0
 
@@ -98,3 +96,8 @@ scale = Vector2(0.5, 0.5)
 color = Color(1, 0.53999996, 0.53999996, 1)
 energy = 0.26
 texture = ExtResource("8_541si")
+
+[node name="HurtSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("9_adh4m")
+volume_db = 10.257
+pitch_scale = 0.72

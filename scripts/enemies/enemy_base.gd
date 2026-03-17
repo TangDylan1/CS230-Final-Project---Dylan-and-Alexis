@@ -3,6 +3,8 @@ extends CharacterBody2D
 
 signal died(enemy: EnemyBase)
 
+@onready var hurt_sound: AudioStreamPlayer2D = $HurtSound
+
 enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 
 @export var enemy_type: EnemyType = EnemyType.SOLDIER
@@ -14,9 +16,6 @@ enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 @export var attack_cooldown: float = 1.0
 @export var coin_min: int = 4
 @export var coin_max: int = 6
-@export var draw_color: Color = Color.RED
-@export var draw_radius: float = 10.0
-@export var draw_circles: bool = true
 @export var draw_attack_range: bool = false
 @export var attack_range_color: Color = Color(1.0, 0.35, 0.2, 0.7)
 @export var contact_hit_idle_cooldown: float = 0.5
@@ -63,14 +62,6 @@ func _ready() -> void:
 		enemy_weakness = "throwing_star"
 		if enemy_type != EnemyType.FLYING:
 			sprite.play("idle_b")
-	
-
-
-func _draw() -> void:
-	if draw_circles:
-		draw_circle(Vector2.ZERO, draw_radius, draw_color)
-	if draw_attack_range:
-		draw_arc(Vector2.ZERO, attack_range, 0.0, TAU, 64, attack_range_color, 2.0)
 
 
 func get_player() -> Node2D:
@@ -108,6 +99,7 @@ func apply_damage(amount: float) -> void:
 	if _is_dead:
 		return
 	current_health -= amount*damage_multiplier
+	hurt_sound.play()
 	_flash_damage()
 	if current_health <= 0:
 		_die()
