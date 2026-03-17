@@ -2,12 +2,15 @@ extends Control
 
 @export var bar_size := Vector2(16, 120)
 @export var bar_color := Color("#30cbff")
+@export var bar_alt_color := Color("#ff3b3b")
 @export var bar_bg_color := Color(0, 0, 0, 0.55)
 
 var _player: Node = null
 var _bar_bg: ColorRect
 var _bar_fill: ColorRect
 var _label: Label
+var _cooldown_cycle: int = 0
+var _last_remaining: float = 0.0
 
 
 func _ready() -> void:
@@ -52,8 +55,14 @@ func _process(_delta: float) -> void:
 	var remaining: float = float(_player.swap_timer)
 	var total: float = maxf(0.001, float(_player.swap_cooldown))
 
+	# Alternate bar color each time a cooldown starts: blue, red, blue, red...
+	if remaining > 0.0 and _last_remaining <= 0.0:
+		_cooldown_cycle += 1
+		_bar_fill.color = bar_color if (_cooldown_cycle % 2 == 1) else bar_alt_color
+
 	if remaining <= 0.0:
 		visible = false
+		_last_remaining = remaining
 		return
 
 	visible = true
@@ -61,4 +70,5 @@ func _process(_delta: float) -> void:
 	var h := bar_size.y * t
 	_bar_fill.size = Vector2(bar_size.x, h)
 	_bar_fill.position = Vector2(0, bar_size.y - h)
+	_last_remaining = remaining
 
