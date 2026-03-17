@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://kc60c1cc8r0w"]
+[gd_scene load_steps=4 format=3 uid="uid://dldg71rthjt4f"]
 
 [ext_resource type="Script" uid="uid://c5tnue1abbyfx" path="res://scripts/dungeon.gd" id="1_dng"]
 [ext_resource type="Script" uid="uid://jiqb5jbb1ret" path="res://scripts/minimap.gd" id="2_map"]

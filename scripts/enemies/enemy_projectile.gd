@@ -2,6 +2,7 @@ extends Area2D
 
 var direction := Vector2.ZERO
 var speed := 200.0
+var damage: int = 1
 var _lifetime := 3.0
 
 
@@ -18,6 +19,8 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
+		if body.has_method("take_damage"):
+			body.take_damage(damage)
 		if body is CharacterBody2D:
 			var kb := direction.normalized() * 150.0
 			(body as CharacterBody2D).velocity += kb

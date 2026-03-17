@@ -23,7 +23,7 @@ func launch(dir: Vector2) -> void:
 
 func _on_body_entered(_hit_body: Node) -> void:
 	if _hit_body is EnemyBase:
-		_hit_body.apply_damage(1)
+		_hit_body.apply_damage(GameManager.get_star_damage())
 		queue_free()
 	elif _hit_body != player:
 		queue_free()

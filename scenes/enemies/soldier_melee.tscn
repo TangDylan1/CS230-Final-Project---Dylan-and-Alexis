@@ -84,6 +84,7 @@ radius = 16.0
 [node name="SoldierMelee" type="CharacterBody2D"]
 collision_layer = 4
 script = ExtResource("1")
+max_health = 6
 move_speed = 90.0
 aggro_range = 200.0
 attack_range = 22.0

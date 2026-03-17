@@ -24,7 +24,6 @@ var _is_open := false
 var _hovered_card: Control = null
 var _card_controls: Array[Control] = []
 var _level_labels: Array[Label] = []
-var _card_levels := {"attack": 1, "speed": 1, "health": 1}
 
 
 func _ready() -> void:
@@ -162,7 +161,7 @@ func _create_card(index: int) -> Control:
 
 	# Level indicator — positioned over the white circle in the top-right
 	var level_lbl := Label.new()
-	level_lbl.text = str(_card_levels[data["key"]])
+	level_lbl.text = str(_get_card_level(data["key"]))
 	level_lbl.add_theme_font_size_override("font_size", 13)
 	level_lbl.add_theme_color_override("font_color", Color(0.15, 0.15, 0.15))
 	level_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -229,19 +228,47 @@ func _on_card_input(event: InputEvent, index: int) -> void:
 		_buy_card(index)
 
 
+func _get_card_level(key: String) -> int:
+	match key:
+		"attack": return GameManager.upgrade_attack
+		"speed": return GameManager.upgrade_speed
+		"health": return GameManager.upgrade_health
+	return 1
+
+
 func _buy_card(index: int) -> void:
 	var data: Dictionary = CARDS[index]
 	var key: String = data["key"]
-	if GameManager.coins >= data["price"]:
-		GameManager.coins -= data["price"]
-		_card_levels[key] += 1
+	if GameManager.spend_coins(data["price"]):
+		match key:
+			"attack": GameManager.upgrade_attack += 1
+			"speed": GameManager.upgrade_speed += 1
+			"health": GameManager.upgrade_health += 1
 		_update_level_labels()
 		_update_coin_display()
+		# Full heal and refill hearts when a card is obtained/bought.
+		_full_heal_player()
+
+
+func _full_heal_player() -> void:
+	var tree := get_tree()
+	var player := tree.get_first_node_in_group("player")
+	if not is_instance_valid(player):
+		return
+	player.max_health = GameManager.get_max_hearts() * 2
+	player.current_health = player.max_health
+	var scene := tree.current_scene
+	if scene:
+		var hud_layer := scene.get_node_or_null("HeartHUD")
+		if hud_layer and hud_layer.get_child_count() > 0:
+			var heart_hud := hud_layer.get_child(0)
+			if heart_hud.has_method("set_half_hearts"):
+				heart_hud.set_half_hearts(player.current_health)
 
 
 func _update_level_labels() -> void:
 	for i in CARDS.size():
-		_level_labels[i].text = str(_card_levels[CARDS[i]["key"]])
+		_level_labels[i].text = str(_get_card_level(CARDS[i]["key"]))
 
 
 # ---------------------------------------------------------------------------
@@ -252,6 +279,7 @@ func open_shop() -> void:
 	_is_open = true
 	_root.visible = true
 	get_tree().paused = true
+	_update_level_labels()
 	_update_coin_display()
 
 

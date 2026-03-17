@@ -1,8 +1,16 @@
 class_name Player
 extends CharacterBody2D
 
-const MAX_SPEED := 300.0
+signal died
+signal health_changed(old_half_hearts: int, new_half_hearts: int)
+
+const BASE_MAX_SPEED := 300.0
 const DASH_SPEED := 700.0
+
+# Used by FSM (e.g. walk_state); matches movement in _physics_process.
+var MAX_SPEED: float:
+	get:
+		return BASE_MAX_SPEED * GameManager.get_speed_multiplier()
 const STAR_PROJECTILE_SCENE := preload("res://scenes/star.tscn")
 const PLAYER_LAYER := 3
 const WORLD_LAYER := 1
@@ -15,6 +23,14 @@ var dash_cooldown := 0.0
 var active_attack := String("throwing_star")
 var star_timer := 0.0
 var star_spawn := false
+# Health in half-hearts (4 hearts = 8 half-hearts). Game starts with 4 full hearts.
+var max_health: int = 8
+var current_health: int = 8
+var _dead := false
+var _damage_cooldown: float = 0.0  # 1s iframe after taking damage
+var _damage_flash_timer: float = 0.0  # 0.5s red/white flash when hit
+var _damage_flash_interval: float = 0.08
+var _damage_flash_show_white: bool = true
 
 @export var FRICTION := 0.1
 @export var ACCELERATION := 50.0
@@ -32,6 +48,9 @@ func _ready() -> void:
 	set_collision_layer_value(PLAYER_LAYER, true)
 	set_collision_mask_value(WORLD_LAYER, true)
 	set_collision_mask_value(ENEMY_LAYER, true)
+	# 4 hearts = 8 half-hearts (shop health upgrade could add more later)
+	max_health = GameManager.get_max_hearts() * 2
+	current_health = max_health
 
 
 func update_active_attack():
@@ -62,6 +81,19 @@ func _process(_delta: float) -> void:
 
 	if dash_cooldown > 0.0:
 		dash_cooldown -= _delta
+	if _damage_cooldown > 0.0:
+		_damage_cooldown -= _delta
+	# Damage flash (white / normal like hearts)
+	if _damage_flash_timer > 0.0:
+		_damage_flash_timer -= _delta
+		var interval_elapsed := 0.5 - _damage_flash_timer
+		var toggle_count := int(interval_elapsed / _damage_flash_interval)
+		_damage_flash_show_white = (toggle_count % 2) == 0
+		if sprite:
+			sprite.modulate = Color(1.5, 1.5, 1.5) if _damage_flash_show_white else Color.WHITE
+	else:
+		if sprite and sprite.modulate != Color.WHITE:
+			sprite.modulate = Color.WHITE
 
 	if active_attack == "katana":
 		# Rotate and flip katana based on mouse dir
@@ -108,7 +140,8 @@ func _physics_process(_delta: float) -> void:
 		return
 
 	var input_dir := get_input_direction()
-	var target_velocity := input_dir * MAX_SPEED
+	var move_speed := BASE_MAX_SPEED * GameManager.get_speed_multiplier()
+	var target_velocity := input_dir * move_speed
 	velocity = velocity.lerp(target_velocity, ACCELERATION * _delta)
 
 	# If player is dashing, override velocity
@@ -141,6 +174,33 @@ func play_sprite_animation(anim: String) -> void:
 		sprite.play(anim)
 
 
+func take_damage(amount: int) -> void:
+	if _dead:
+		return
+	if _damage_cooldown > 0.0:
+		return
+	var old_half := current_health
+	current_health = clampi(current_health - amount, 0, max_health)
+	_damage_cooldown = 0.5  # 0.5s invulnerability when hit
+	_damage_flash_timer = 0.5
+	_damage_flash_show_white = true
+	if sprite:
+		sprite.modulate = Color(1.5, 1.5, 1.5)  # Start with bright white flash
+	health_changed.emit(old_half, current_health)
+	if current_health <= 0:
+		_dead = true
+		died.emit()
+
+
+func heal(amount: int) -> void:
+	if _dead:
+		return
+	var old_half := current_health
+	current_health = mini(current_health + amount, max_health)
+	if current_health != old_half:
+		health_changed.emit(old_half, current_health)
+
+
 func _katana_hit(attack_dir: Vector2) -> void:
 	var hit_range := 80.0
 	var hit_angle := PI / 2.5
@@ -151,4 +211,4 @@ func _katana_hit(attack_dir: Vector2) -> void:
 		if to_enemy.normalized().dot(attack_dir.normalized()) < cos(hit_angle):
 			continue
 		if enemy.has_method("apply_damage"):
-			enemy.apply_damage(2)
+			enemy.apply_damage(GameManager.get_katana_damage())

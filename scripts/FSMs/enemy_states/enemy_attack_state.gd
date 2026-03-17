@@ -11,6 +11,15 @@ func enter() -> void:
 	_cooldown_timer = 0.0
 	_windup_timer = 0.0
 	_has_attacked = false
+	# Melee types (SOLDIER, FLYING): hit immediately on contact when entering attack state.
+	var enemy := fsm.get_parent() as EnemyBase
+	if enemy and not enemy.frozen:
+		var dist := enemy.distance_to_player()
+		if dist <= enemy.attack_range * 2.0:
+			match enemy.enemy_type:
+				EnemyBase.EnemyType.SOLDIER, EnemyBase.EnemyType.FLYING:
+					_do_melee_hit(enemy)
+					_has_attacked = true
 
 func physics_update(delta: float) -> void:
 	var enemy := fsm.get_parent() as EnemyBase
@@ -39,7 +48,8 @@ func physics_update(delta: float) -> void:
 func _melee_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
 	enemy.velocity = Vector2.ZERO
 
-	if not _has_attacked and _cooldown_timer >= 0.2:
+	# Hit as soon as in range (contact); no windup delay so melee hits on contact.
+	if not _has_attacked and dist <= enemy.attack_range * 2.0:
 		_do_melee_hit(enemy)
 		_has_attacked = true
 
@@ -87,8 +97,9 @@ func _tank_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
 
 func _do_melee_hit(enemy: EnemyBase) -> void:
 	var player := enemy.get_player()
-	if player and enemy.global_position.distance_to(player.global_position) <= enemy.attack_range * 2.0:
-		# Knockback player
+	if player and enemy.global_position.distance_to(player.global_position) <= enemy.attack_range * 4.0:
+		if player.has_method("take_damage"):
+			player.take_damage(enemy.attack_damage)
 		if player is CharacterBody2D:
 			var kb_dir := (player.global_position - enemy.global_position).normalized()
 			(player as CharacterBody2D).velocity += kb_dir * 200.0
@@ -125,5 +136,6 @@ func _create_projectile(enemy: EnemyBase) -> Node2D:
 	proj.set_script(script)
 	proj.set("direction", dir)
 	proj.set("speed", ENEMY_PROJECTILE_SPEED)
+	proj.set("damage", enemy.attack_damage)
 
 	return proj

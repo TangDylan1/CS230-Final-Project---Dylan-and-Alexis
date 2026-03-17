@@ -82,6 +82,9 @@ const DOOR_CENTERS := {
 	Vector2i.RIGHT: Vector2(688, 224),
 }
 
+# Player collides with world layer (1) — barriers use this to block doors.
+const WORLD_LAYER := 1
+
 
 @export var grid_size := Vector2i(8, 8)
 @export var target_rooms: int = 12
@@ -92,6 +95,7 @@ var _current_cell: Vector2i
 var _transitioning := false
 var _player: CharacterBody2D
 var _door_areas: Array[Area2D] = []
+var _door_barriers: Array[StaticBody2D] = []  # Block doors until room is cleared
 var _room_scenes: Dictionary = {}      # for each cell, store the selected room scene
 var _room_open_dirs: Dictionary = {}   # for each cell, store the open directions
 var _room_container: Node2D
@@ -99,6 +103,7 @@ var _active_room_root: Node2D
 var _active_room_tilemap: TileMapLayer
 var _room_enemies: Array[Node] = []
 var _coin_label: Label
+var _heart_hud: Control
 var _cleared_rooms: Dictionary = {}    # cell -> bool, true if enemies cleared once
 
 const ENEMY_SCENES := {
@@ -137,6 +142,7 @@ func _ready() -> void:
 	_setup_menus()
 	_setup_shop_prompt()
 	_setup_coin_hud()
+	_setup_heart_hud()
 	_generate_dungeon()
 
 
@@ -180,6 +186,17 @@ func _spawn_player() -> void:
 	_player = player_scene.instantiate()
 	add_child(_player)
 	_player.position = _room_center()
+	if _player.has_signal("died"):
+		_player.died.connect(_on_player_died)
+	if _player.has_signal("health_changed") and _heart_hud:
+		_player.health_changed.connect(_on_player_health_changed)
+	if _heart_hud and _heart_hud.has_method("set_half_hearts"):
+		_heart_hud.set_half_hearts(_player.current_health)
+
+
+func _on_player_died() -> void:
+	if _game_over_menu and _game_over_menu.has_method("show_game_over"):
+		_game_over_menu.show_game_over()
 
 
 func _room_center() -> Vector2:
@@ -225,6 +242,9 @@ func _on_door_body_entered(body: Node2D, direction: Vector2i) -> void:
 
 func _on_door_entered(direction: Vector2i) -> void:
 	if _transitioning:
+		return
+	# Block leaving the room until all enemies are dead.
+	if _has_living_enemies_in_room():
 		return
 	var target := _current_cell + direction
 	if _layout.has(target):
@@ -281,6 +301,7 @@ func _show_current_room() -> void:
 	_apply_door_tiles(open_dirs)
 	_create_doors(open_dirs)
 	_spawn_enemies_for_room(_current_cell)
+	_update_door_barriers()
 
 
 func _get_open_dirs(cell: Vector2i) -> Array[Vector2i]:
@@ -358,11 +379,17 @@ func _clear_active_room() -> void:
 
 
 func _create_doors(open_dirs: Array[Vector2i]) -> void:
-	_clear_doors() # Remove existing doors from previous room
+	_clear_doors() # Remove existing doors and barriers from previous room
 
 	for dir in open_dirs:
 		if not DOOR_CENTERS.has(dir):
 			continue
+
+		var rect_size: Vector2
+		if dir == Vector2i.UP or dir == Vector2i.DOWN:
+			rect_size = Vector2(56, 24)
+		else:
+			rect_size = Vector2(24, 56)
 
 		# Area2D that detects when a player body walks into the doorway.
 		var area := Area2D.new()
@@ -371,26 +398,53 @@ func _create_doors(open_dirs: Array[Vector2i]) -> void:
 		area.monitorable = false
 		add_child(area)
 
-		# Collision shape sized to the 2-tile doorway.
 		var shape := CollisionShape2D.new()
 		var rect := RectangleShape2D.new()
-		if dir == Vector2i.UP or dir == Vector2i.DOWN:
-			rect.size = Vector2(56, 24)
-		else:
-			rect.size = Vector2(24, 56)
+		rect.size = rect_size
 		shape.shape = rect
 		area.add_child(shape)
 
 		area.body_entered.connect(_on_door_body_entered.bind(dir))
 		_door_areas.append(area)
 
+		# StaticBody2D barrier — blocks player until room is cleared.
+		var barrier := StaticBody2D.new()
+		barrier.position = DOOR_CENTERS[dir]
+		barrier.collision_layer = 0  # Start disabled; _update_door_barriers enables when room has enemies
+		barrier.collision_mask = 0
+		add_child(barrier)
+		var barrier_shape := CollisionShape2D.new()
+		var barrier_rect := RectangleShape2D.new()
+		barrier_rect.size = rect_size
+		barrier_shape.shape = barrier_rect
+		barrier.add_child(barrier_shape)
+		_door_barriers.append(barrier)
 
-# Clear all existing door areas 
+
+# Clear all existing door areas and barriers.
 func _clear_doors() -> void:
 	for area in _door_areas:
 		if is_instance_valid(area):
 			area.queue_free()
 	_door_areas.clear()
+	for barrier in _door_barriers:
+		if is_instance_valid(barrier):
+			barrier.queue_free()
+	_door_barriers.clear()
+
+
+func _update_door_barriers() -> void:
+	var should_block := _has_living_enemies_in_room()
+	for barrier in _door_barriers:
+		if is_instance_valid(barrier):
+			barrier.set_collision_layer_value(WORLD_LAYER, should_block)
+
+
+func _has_living_enemies_in_room() -> bool:
+	for e in _room_enemies:
+		if is_instance_valid(e) and e.get_parent() == self:
+			return true
+	return false
 
 # Enemy spawning
 # --------------------------------------------------------------------------
@@ -444,14 +498,19 @@ func _spawn_enemies_for_room(cell: Vector2i) -> void:
 		_room_enemies.append(enemy)
 
 
+const HEART_PICKUP_SCENE := preload("res://scenes/heart_pickup.tscn")
+
+
 func _on_enemy_died(cell: Vector2i, enemy: Node) -> void:
+	var death_pos: Vector2 = enemy.global_position if is_instance_valid(enemy) else Vector2.ZERO
+
 	# Remove from current room enemy list.
 	for i in range(_room_enemies.size()):
 		if _room_enemies[i] == enemy:
 			_room_enemies.remove_at(i)
 			break
 
-	# If no living enemies remain in this cell, mark as cleared.
+	# If no living enemies remain in this cell, mark as cleared and spawn 1 heart pickup.
 	var any_alive := false
 	for e in _room_enemies:
 		if is_instance_valid(e) and e.get_parent() == self:
@@ -460,6 +519,11 @@ func _on_enemy_died(cell: Vector2i, enemy: Node) -> void:
 
 	if not any_alive:
 		_cleared_rooms[cell] = true
+		_update_door_barriers()
+		# Last enemy in room: drop 1 heart that heals 1 full heart.
+		var heart := HEART_PICKUP_SCENE.instantiate()
+		add_child(heart)
+		heart.global_position = death_pos
 
 
 func _clear_room_enemies() -> void:
@@ -474,6 +538,9 @@ func _clear_room_enemies() -> void:
 	for proj in get_tree().get_nodes_in_group("enemy_projectiles"):
 		if is_instance_valid(proj):
 			proj.queue_free()
+	for node in get_tree().get_nodes_in_group("heart_pickups"):
+		if is_instance_valid(node):
+			node.queue_free()
 
 
 # --------------------------------------------------------------------------
@@ -509,6 +576,30 @@ func _setup_coin_hud() -> void:
 func _on_coins_changed(new_amount: int) -> void:
 	if _coin_label:
 		_coin_label.text = "Coins: %d" % new_amount
+
+
+func _on_player_health_changed(old_half: int, new_half: int) -> void:
+	if not _heart_hud:
+		return
+	if new_half >= old_half:
+		_heart_hud.set_half_hearts(new_half)
+	else:
+		_heart_hud.on_damage_taken(old_half, new_half)
+
+
+func _setup_heart_hud() -> void:
+	var hud_layer := CanvasLayer.new()
+	hud_layer.layer = 5
+	hud_layer.name = "HeartHUD"
+	add_child(hud_layer)
+
+	var heart_script := load("res://scripts/ui/heart_hud.gd") as GDScript
+	_heart_hud = Control.new()
+	_heart_hud.set_script(heart_script)
+	_heart_hud.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_heart_hud.position = Vector2.ZERO
+	_heart_hud.custom_minimum_size = Vector2(220, 56)
+	hud_layer.add_child(_heart_hud)
 
 
 # --------------------------------------------------------------------------
