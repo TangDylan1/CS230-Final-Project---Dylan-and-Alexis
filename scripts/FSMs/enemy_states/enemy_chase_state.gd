@@ -9,7 +9,7 @@ func enter() -> void:
 				sprite.play("chase_r")
 		else:
 				sprite.play("chase_b")
-		sprite.play("chase")
+		
 		
 	if enemy.enemy_type == EnemyBase.EnemyType.FLYING:
 		enemy.set_collision_mask_value(EnemyBase.FURNITURE_LAYER, false)

@@ -25,6 +25,7 @@ const SPAWN_OFFSETS := {
 }
 
 const PLAYER_DOOR_LAYER := 2
+const DASH_DOOR_LAYER := 6
 # Door cell positions inside a room (22x15).
 const DOOR_TILE_CELLS := {
 	Vector2i.UP: [
@@ -520,6 +521,7 @@ func _create_doors(open_dirs: Array[Vector2i]) -> void:
 		area.monitorable = false
 		area.collision_mask = 0
 		area.set_collision_mask_value(PLAYER_DOOR_LAYER, true)
+		area.set_collision_mask_value(DASH_DOOR_LAYER, true)
 		add_child(area)
 
 		var shape := CollisionShape2D.new()

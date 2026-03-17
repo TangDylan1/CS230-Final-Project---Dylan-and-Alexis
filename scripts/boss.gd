@@ -12,7 +12,7 @@ const PROJECTILE_DAMAGE := 1
 const WAVE_COOLDOWN := 1.5
 const SHOT_INTERVAL := 0.2
 const INTRO_DELAY := 2.0  # Don't shoot for first 2 seconds
-const BOSS_RADIUS := 60.0  # 75% of original 80
+const BOSS_RADIUS := 50.0 
 
 var max_health := 30
 var current_health: int
@@ -57,9 +57,6 @@ func _process(delta: float) -> void:
 		_wave_timer = 0.0
 		_start_pattern()
 
-
-func _draw() -> void:
-	draw_circle(Vector2.ZERO, BOSS_RADIUS, Color.RED)
 
 
 func apply_damage(amount: int) -> void:

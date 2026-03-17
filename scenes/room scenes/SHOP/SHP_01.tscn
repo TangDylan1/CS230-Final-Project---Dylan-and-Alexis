@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=4 uid="uid://hsflxrbth6dq"]
+[gd_scene load_steps=14 format=4 uid="uid://hsflxrbth6dq"]
 
 [ext_resource type="Texture2D" uid="uid://8ryh31ld5bq" path="res://assets/tileset/GuttyKreum_ForestGraveyard/Tilemaps/Fulltilemap.png" id="1_nidk4"]
 [ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="2_lo1ej"]
+[ext_resource type="Texture2D" uid="uid://dvncm1x5d0fg1" path="res://assets/sprites/merchant.png" id="3_ru2s4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lo1ej"]
 texture = ExtResource("1_nidk4")
@@ -1769,6 +1770,44 @@ texture = ExtResource("1_nidk4")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_nidk4")
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_6bv6w"]
+atlas = ExtResource("3_ru2s4")
+region = Rect2(0, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a30pc"]
+atlas = ExtResource("3_ru2s4")
+region = Rect2(34, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fdmal"]
+atlas = ExtResource("3_ru2s4")
+region = Rect2(68, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qmo1n"]
+atlas = ExtResource("3_ru2s4")
+region = Rect2(102, 0, 34, 34)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xr831"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6bv6w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a30pc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fdmal")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qmo1n")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1k2j7"]
+
 [node name="Shp01" type="Node2D"]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
@@ -1798,3 +1837,16 @@ energy = 0.5
 shadow_enabled = true
 texture = ExtResource("2_lo1ej")
 texture_scale = 0.84
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(368, 222)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_xr831")
+autoplay = "default"
+frame_progress = 0.37301046
+
+[node name="StaticBody2D" type="StaticBody2D" parent="AnimatedSprite2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AnimatedSprite2D/StaticBody2D"]
+position = Vector2(0, 6)
+shape = SubResource("CircleShape2D_1k2j7")

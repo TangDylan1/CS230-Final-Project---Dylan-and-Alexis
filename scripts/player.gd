@@ -199,8 +199,9 @@ func play_sprite_animation(anim: String) -> void:
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
 		sprite.play(anim)
 
-
 func apply_damage(amount: int) -> void:
+	if dash_velocity != Vector2.ZERO:
+		return
 	if _dead:
 		return
 	if _damage_cooldown > 0.0:
@@ -242,13 +243,10 @@ func _katana_hit(attack_dir: Vector2) -> void:
 			enemy.apply_damage(GameManager.get_katana_damage())
 
 
-func _flash_damage() -> void:
-	modulate = Color(10, 10, 10)
-	var tween := create_tween()
-	tween.tween_property(self, "modulate", Color.WHITE, 0.15)
-
 # Force is knockback force, duration is how long the knockback lasts (used by enemy melee)
 func apply_knockback(force: Vector2, duration: float = 0.18) -> void:
+	if dash_velocity != Vector2.ZERO:
+		return
 	if force == Vector2.ZERO:
 		return
 	knockback_velocity = force

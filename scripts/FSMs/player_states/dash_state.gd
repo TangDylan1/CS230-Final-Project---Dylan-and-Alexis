@@ -2,7 +2,7 @@ extends State
 class_name DashState
 
 @export var dash_duration: float = 0.18
-const DASH_DOOR_LAYER := 2
+const DASH_DOOR_LAYER := 6
 
 var dash_timer: float = 0.0
 var dash_direction: Vector2 = Vector2.ZERO
