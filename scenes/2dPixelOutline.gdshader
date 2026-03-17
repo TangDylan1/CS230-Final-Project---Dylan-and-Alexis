@@ -12,7 +12,7 @@ void fragment() {
 	// Called for every pixel the material is visible on.
 	vec4 base = texture(TEXTURE, UV);
 	if (base.a > 0.0) { // if pixel isn't transparent, 
-		COLOR = base;
+		COLOR = base * COLOR;
 	}
 	
 	else {
