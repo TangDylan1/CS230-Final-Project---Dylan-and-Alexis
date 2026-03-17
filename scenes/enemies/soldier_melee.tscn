@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://wwutwhvbcorv"]
+[gd_scene load_steps=20 format=3 uid="uid://wwutwhvbcorv"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://bhgi13n717tut" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://dsxqy117dw5mm" path="res://assets/sprites/enemies/oni_r_idle.png" id="3_sf1ie"]
 [ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="4_sf1ie"]
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
 
@@ -98,7 +99,14 @@ scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_jx3ev")
 animation = &"chase"
 autoplay = "idle"
-frame_progress = 0.7348989
+frame_progress = 0.14385782
+
+[node name="PointLight2D" type="PointLight2D" parent="AnimatedSprite2D"]
+position = Vector2(0, 6.499996)
+scale = Vector2(0.205, 0.205)
+color = Color(1, 0.53999996, 0.53999996, 1)
+energy = 0.37
+texture = ExtResource("4_sf1ie")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3)

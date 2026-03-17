@@ -2,6 +2,10 @@ extends State
 class_name EnemyChaseState
 
 func enter() -> void:
+	var enemy := fsm.get_parent() as EnemyBase
+	var sprite := enemy.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if enemy.enemy_type != EnemyBase.EnemyType.FLYING and enemy.enemy_type != EnemyBase.EnemyType.RANGED:
+		sprite.play("chase")
 	pass
 
 func physics_update(delta: float) -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cbp56cjr63ns1"]
+[gd_scene load_steps=21 format=3 uid="uid://cbp56cjr63ns1"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
@@ -6,8 +6,25 @@
 [ext_resource type="Script" uid="uid://bhgi13n717tut" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://d4jypwdwmf0ea" path="res://assets/sprites/enemies/tank_oni_r_walk.png" id="3_i1nod"]
 [ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="4_i1nod"]
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghqd6"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(0, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kvpm7"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(34, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_us83a"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(68, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yoicx"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(102, 0, 34, 34)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gq6sh"]
 atlas = ExtResource("2_wt8sv")
@@ -29,24 +46,25 @@ region = Rect2(102, 0, 34, 34)
 atlas = ExtResource("2_wt8sv")
 region = Rect2(136, 0, 34, 34)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ghqd6"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(0, 0, 34, 34)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_kvpm7"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(34, 0, 34, 34)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_us83a"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(68, 0, 34, 34)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_yoicx"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(102, 0, 34, 34)
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_gq6sh"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghqd6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kvpm7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_us83a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yoicx")
+}],
+"loop": true,
+"name": &"chase",
+"speed": 7.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gq6sh")
@@ -64,25 +82,8 @@ animations = [{
 "texture": SubResource("AtlasTexture_hv5a6")
 }],
 "loop": true,
-"name": &"chase",
-"speed": 9.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ghqd6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_kvpm7")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_us83a")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_yoicx")
-}],
-"loop": true,
 "name": &"idle",
-"speed": 7.0
+"speed": 9.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0qyf8"]
@@ -109,9 +110,9 @@ draw_circles = false
 position = Vector2(0, -7)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_gq6sh")
-animation = &"chase"
+animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.35484943
+frame_progress = 0.49848223
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -1)
@@ -132,3 +133,10 @@ script = ExtResource("5")
 
 [node name="EnemyDeadState" type="Node" parent="FiniteStateMachine"]
 script = ExtResource("6")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(0.5, 9.5)
+scale = Vector2(0.5, 0.5)
+color = Color(1, 0.53999996, 0.53999996, 1)
+energy = 0.36
+texture = ExtResource("4_i1nod")
