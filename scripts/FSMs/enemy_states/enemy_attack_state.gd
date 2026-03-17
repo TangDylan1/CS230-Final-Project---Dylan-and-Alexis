@@ -107,8 +107,8 @@ func _tank_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
 func _do_melee_hit(enemy: EnemyBase) -> void:
 	var player := enemy.get_player()
 	if player and enemy.global_position.distance_to(player.global_position) <= enemy.attack_range * 2.0:
-		if player.has_method("take_damage"):
-			player.take_damage(enemy.attack_damage)
+		if player.has_method("apply_damage"):
+			player.apply_damage(enemy.attack_damage)
 		# Knockback player
 		if player is CharacterBody2D:
 			var kb_dir := (player.global_position - enemy.global_position).normalized()

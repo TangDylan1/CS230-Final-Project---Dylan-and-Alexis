@@ -52,7 +52,6 @@ z_index = 1
 collision_layer = 4
 script = ExtResource("1")
 enemy_type = 2
-max_health = 3
 move_speed = 130.0
 aggro_range = 220.0
 attack_range = 20.0
@@ -93,6 +92,7 @@ script = ExtResource("5")
 script = ExtResource("6")
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
+z_index = 1
 position = Vector2(0.5, 9.5)
 scale = Vector2(0.5, 0.5)
 color = Color(1, 0.53999996, 0.53999996, 1)

@@ -25,13 +25,14 @@ enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 @export var wobble_amplitude: float = 0.0
 @export var wobble_speed: float = 5.0
 
-var current_health: int
+var current_health: float
 var attack_timer: float = 0.0
 var contact_hit_idle_timer: float = 0.0
 var frozen: bool = false
 var _wobble_time: float = 0.0
 var _is_dead: bool = false
 var been_attacked: bool = false
+var enemy_weakness: String = ""
 
 const COIN_SCENE_PATH := "res://scenes/coin.tscn"
 const WORLD_LAYER := 1
@@ -48,6 +49,17 @@ func _ready() -> void:
 	set_collision_mask_value(PLAYER_LAYER, true)
 	set_collision_mask_value(ENEMY_LAYER, true)
 	_wobble_time = randf() * TAU
+
+	# randomize weakness between katana and throwing star
+	if randi() % 2 == 0:
+		enemy_weakness = "katana"
+		if enemy_type != EnemyType.FLYING:
+			sprite.play("idle_r")
+	else:
+		enemy_weakness = "throwing_star"
+		if enemy_type != EnemyType.FLYING:
+			sprite.play("idle_b")
+	
 
 
 func _draw() -> void:
@@ -78,11 +90,20 @@ func direction_to_player() -> Vector2:
 	return Vector2.ZERO
 
 
-func apply_damage(amount: int) -> void:
+func apply_damage(amount: float) -> void:
+	var damage_multiplier := 0.0
+
+	var player := get_player()
+	if player:
+		if player.active_attack == enemy_weakness:
+			damage_multiplier = 1.5
+		else:
+			damage_multiplier = 0.5
+
 	been_attacked = true
 	if _is_dead:
 		return
-	current_health -= amount
+	current_health -= amount*damage_multiplier
 	_flash_damage()
 	if current_health <= 0:
 		_die()

@@ -113,6 +113,7 @@ func _process(_delta: float) -> void:
 		dash_cooldown -= _delta
 	if _damage_cooldown > 0.0:
 		_damage_cooldown -= _delta
+
 	# Damage flash (white / normal like hearts)
 	if _damage_flash_timer > 0.0:
 		_damage_flash_timer -= _delta
@@ -120,7 +121,7 @@ func _process(_delta: float) -> void:
 		var toggle_count := int(interval_elapsed / _damage_flash_interval)
 		_damage_flash_show_white = (toggle_count % 2) == 0
 		if sprite:
-			sprite.modulate = Color(1.5, 1.5, 1.5) if _damage_flash_show_white else Color.WHITE
+			sprite.modulate = Color(10, 10, 10) 
 	else:
 		if sprite and sprite.modulate != Color.WHITE:
 			sprite.modulate = Color.WHITE
@@ -211,7 +212,7 @@ func play_sprite_animation(anim: String) -> void:
 		sprite.play(anim)
 
 
-func take_damage(amount: int) -> void:
+func apply_damage(amount: int) -> void:
 	if _dead:
 		return
 	if _damage_cooldown > 0.0:
@@ -221,12 +222,16 @@ func take_damage(amount: int) -> void:
 	_damage_cooldown = 0.5  # 0.5s invulnerability when hit
 	_damage_flash_timer = 0.5
 	_damage_flash_show_white = true
-	if sprite:
-		sprite.modulate = Color(1.5, 1.5, 1.5)  # Start with bright white flash
+	_flash_damage()
 	health_changed.emit(old_half, current_health)
 	if current_health <= 0:
 		_dead = true
 		died.emit()
+
+func _flash_damage() -> void:
+	modulate = Color(10, 10, 10)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.15)
 
 
 func heal(amount: int) -> void:
