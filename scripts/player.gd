@@ -214,6 +214,11 @@ func apply_damage(amount: int) -> void:
 		_dead = true
 		died.emit()
 
+func _flash_damage() -> void:
+	modulate = Color(10, 10, 10)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.15)
+
 
 func heal(amount: int) -> void:
 	if _dead:

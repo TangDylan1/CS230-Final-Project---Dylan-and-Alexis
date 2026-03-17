@@ -1,14 +1,32 @@
-[gd_scene load_steps=20 format=3 uid="uid://wwutwhvbcorv"]
+[gd_scene load_steps=30 format=3 uid="uid://wwutwhvbcorv"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://yyn7w4clbr8j" path="res://assets/sprites/enemies/oni_b_walk.png" id="2_hg0of"]
 [ext_resource type="Texture2D" uid="uid://khu8wi6ihy" path="res://assets/sprites/enemies/oni_r_walk.png" id="2_sfmmy"]
 [ext_resource type="Script" uid="uid://bhgi13n717tut" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://dsxqy117dw5mm" path="res://assets/sprites/enemies/oni_r_idle.png" id="3_sf1ie"]
 [ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://c1kxb0m2q0cup" path="res://assets/sprites/enemies/oni_b_idle.png" id="4_jx3ev"]
 [ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="4_sf1ie"]
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ni3l"]
+atlas = ExtResource("2_hg0of")
+region = Rect2(0, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2w2ro"]
+atlas = ExtResource("2_hg0of")
+region = Rect2(34, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_awfkr"]
+atlas = ExtResource("2_hg0of")
+region = Rect2(68, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_phecv"]
+atlas = ExtResource("2_hg0of")
+region = Rect2(102, 0, 34, 34)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8uib7"]
 atlas = ExtResource("2_sfmmy")
@@ -24,6 +42,22 @@ region = Rect2(68, 0, 34, 34)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_huelb"]
 atlas = ExtResource("2_sfmmy")
+region = Rect2(102, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ltu5i"]
+atlas = ExtResource("4_jx3ev")
+region = Rect2(0, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x3ski"]
+atlas = ExtResource("4_jx3ev")
+region = Rect2(34, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0fmme"]
+atlas = ExtResource("4_jx3ev")
+region = Rect2(68, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ffi2e"]
+atlas = ExtResource("4_jx3ev")
 region = Rect2(102, 0, 34, 34)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0bwff"]
@@ -46,6 +80,23 @@ region = Rect2(102, 0, 34, 34)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_8ni3l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2w2ro")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_awfkr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_phecv")
+}],
+"loop": true,
+"name": &"chase_b",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_8uib7")
 }, {
 "duration": 1.0,
@@ -58,8 +109,25 @@ animations = [{
 "texture": SubResource("AtlasTexture_huelb")
 }],
 "loop": true,
-"name": &"chase",
+"name": &"chase_r",
 "speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ltu5i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x3ski")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0fmme")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ffi2e")
+}],
+"loop": true,
+"name": &"idle_b",
+"speed": 7.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -75,7 +143,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_41wn5")
 }],
 "loop": true,
-"name": &"idle",
+"name": &"idle_r",
 "speed": 7.0
 }]
 
@@ -97,11 +165,11 @@ draw_circles = false
 position = Vector2(0, -15)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_jx3ev")
-animation = &"chase"
-autoplay = "idle"
-frame_progress = 0.14385782
+animation = &"idle_r"
+autoplay = "idle_r"
 
 [node name="PointLight2D" type="PointLight2D" parent="AnimatedSprite2D"]
+z_index = 1
 position = Vector2(0, 6.499996)
 scale = Vector2(0.205, 0.205)
 color = Color(1, 0.53999996, 0.53999996, 1)

@@ -5,6 +5,10 @@ func enter() -> void:
 	var enemy := fsm.get_parent() as EnemyBase
 	var sprite := enemy.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
 	if enemy.enemy_type != EnemyBase.EnemyType.FLYING and enemy.enemy_type != EnemyBase.EnemyType.RANGED:
+		if enemy.enemy_weakness == "katana":
+				sprite.play("chase_r")
+		else:
+				sprite.play("chase_b")
 		sprite.play("chase")
 		
 	if enemy.enemy_type == EnemyBase.EnemyType.FLYING:

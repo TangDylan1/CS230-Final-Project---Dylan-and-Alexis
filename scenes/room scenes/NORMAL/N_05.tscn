@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=4 uid="uid://brdmnr3ll83w6"]
+[gd_scene load_steps=5 format=4 uid="uid://tyvrtix1xitp"]
 
 [ext_resource type="Texture2D" uid="uid://8ryh31ld5bq" path="res://assets/tileset/GuttyKreum_ForestGraveyard/Tilemaps/Fulltilemap.png" id="1_267uq"]
 [ext_resource type="TileSet" uid="uid://ck1gfpteisar1" path="res://assets/tileset/tileset.tres" id="2_lmjxl"]

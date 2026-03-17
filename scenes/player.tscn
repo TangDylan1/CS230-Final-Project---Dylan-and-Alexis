@@ -327,6 +327,14 @@ script = ExtResource("1_plr")
 scale = Vector2(2, 2)
 shape = SubResource("CapsuleShape2D_dqkch")
 
+[node name="PointLight2D" type="PointLight2D" parent="."]
+z_index = 1
+color = Color(0.815986, 0.9273391, 0.96797365, 1)
+energy = 0.5
+shadow_enabled = true
+texture = ExtResource("2_g2els")
+texture_scale = 0.84
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 material = SubResource("ShaderMaterial_jej6c")
 position = Vector2(0, -16)
