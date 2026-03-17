@@ -12,9 +12,10 @@ var MAX_SPEED: float:
 	get:
 		return BASE_MAX_SPEED * GameManager.get_speed_multiplier()
 const STAR_PROJECTILE_SCENE := preload("res://scenes/star.tscn")
-const PLAYER_LAYER := 3
+const PLAYER_LAYER := 2
 const WORLD_LAYER := 1
-const ENEMY_LAYER := 4
+const ENEMY_LAYER := 3
+const FURNITURE_LAYER := 4
 
 var frozen := false
 var dash_velocity := Vector2.ZERO
@@ -58,6 +59,7 @@ func _ready() -> void:
 	# 4 hearts = 8 half-hearts (shop health upgrade could add more later)
 	max_health = GameManager.get_max_hearts() * 2
 	current_health = max_health
+	set_collision_mask_value(FURNITURE_LAYER, true)
 	katana.visible = false
 	throwing_star.visible = false
 

@@ -35,8 +35,10 @@ var been_attacked: bool = false
 
 const COIN_SCENE_PATH := "res://scenes/coin.tscn"
 const WORLD_LAYER := 1
-const PLAYER_LAYER := 3
-const ENEMY_LAYER := 4
+const PLAYER_LAYER := 2
+const ENEMY_LAYER := 3
+const FURNITURE_LAYER := 4
+const PROJECTILE_LAYER := 5
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -47,6 +49,8 @@ func _ready() -> void:
 	set_collision_mask_value(WORLD_LAYER, true)
 	set_collision_mask_value(PLAYER_LAYER, true)
 	set_collision_mask_value(ENEMY_LAYER, true)
+	set_collision_mask_value(FURNITURE_LAYER, true)
+
 	_wobble_time = randf() * TAU
 
 

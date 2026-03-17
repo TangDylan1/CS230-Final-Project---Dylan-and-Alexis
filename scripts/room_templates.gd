@@ -15,7 +15,8 @@ const START_SCENE_POOL    := [preload("res://scenes/room scenes/start.tscn"),]
 
 const NORMAL_SCENE_POOL   := [preload("res://scenes/room scenes/NORMAL/N_01.tscn"), 
 							  preload("res://scenes/room scenes/NORMAL/N_02.tscn"), 
-							  preload("res://scenes/room scenes/NORMAL/N_03.tscn")]
+							  preload("res://scenes/room scenes/NORMAL/N_03.tscn"),
+							  preload("res://scenes/room scenes/NORMAL/N_04.tscn")]
 
 const BOSS_SCENE_POOL     := [preload("res://scenes/room scenes/BOSS/B_01.tscn")]
 const SHOP_SCENE_POOL     := [preload("res://scenes/room scenes/SHOP/SHP_01.tscn")]
