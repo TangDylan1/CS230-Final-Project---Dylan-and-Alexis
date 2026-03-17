@@ -1,6 +1,14 @@
 class_name Player
 extends CharacterBody2D
 
+@onready var hurt_sound: AudioStreamPlayer2D = $HurtSound
+@onready var slash_sound: AudioStreamPlayer2D = $SlashSound
+@onready var star_sound: AudioStreamPlayer2D = $StarSound
+@onready var katanapower_sound: AudioStreamPlayer2D = $KatanaPowerSound
+@onready var starpower_sound: AudioStreamPlayer2D = $StarPowerSound
+@onready var dash_sound: AudioStreamPlayer2D = $DashSound
+@onready var heal_sound: AudioStreamPlayer2D = $HealSound
+
 signal died
 signal health_changed(old_half_hearts: int, new_half_hearts: int)
 
@@ -60,17 +68,18 @@ func _ready() -> void:
 	katana.visible = false
 	throwing_star.visible = false
 
-
 func update_active_attack_sprites():
 	if active_attack == "katana":
 		katana.visible = true
 		throwing_star.visible = false
+		
 	elif active_attack == "throwing_star":
 		katana.visible = false
 		throwing_star.visible = true
-
+		
 
 func throw_star(mouse_direction: Vector2) -> void:
+	star_sound.play()
 	var star = STAR_PROJECTILE_SCENE.instantiate()
 	get_tree().current_scene.add_child(star)
 	star.global_position = global_position + mouse_direction.normalized() * 24.0
@@ -96,10 +105,12 @@ func _process(_delta: float) -> void:
 			active_attack = "throwing_star"
 			swap_shader_flash(Color("#30cbff"), 0.7, sprite)
 			swap_shader_flash(Color("#30cbff"), 0.7, throwing_star_sprite)
+			katanapower_sound.play()
 		else:
 			active_attack = "katana"
 			swap_shader_flash(Color("#ff5260"), 0.7, sprite)
 			swap_shader_flash(Color("#ff5260"), 0.7, katana_sprite)
+			starpower_sound.play()
 
 	# Flip player based on mouse dir
 	var mouse_direction := (get_global_mouse_position() - global_position).normalized()
@@ -200,6 +211,7 @@ func play_sprite_animation(anim: String) -> void:
 		sprite.play(anim)
 
 func apply_damage(amount: int) -> void:
+	hurt_sound.play()
 	if dash_velocity != Vector2.ZERO:
 		return
 	if _dead:
@@ -228,9 +240,11 @@ func heal(amount: int) -> void:
 	current_health = mini(current_health + amount, max_health)
 	if current_health != old_half:
 		health_changed.emit(old_half, current_health)
+	heal_sound.play()
 
 
 func _katana_hit(attack_dir: Vector2) -> void:
+	slash_sound.play()
 	var hit_range := 80.0
 	var hit_angle := PI / 2.5
 	for enemy in get_tree().get_nodes_in_group("enemies"):

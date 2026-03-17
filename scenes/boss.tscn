@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://ca6r3pa0svcph"]
+[gd_scene load_steps=13 format=3 uid="uid://ca6r3pa0svcph"]
 
 [ext_resource type="Script" uid="uid://bul6u4u4v3vhi" path="res://scripts/boss.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://cgrnmma6kqs50" path="res://assets/sprites/enemies/oni_king_idle.png" id="2_neq0i"]
+[ext_resource type="AudioStream" uid="uid://5jwwgp6qvg7a" path="res://assets/SFX/01_Hurt_v1.wav" id="3_jncid"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_boss"]
 radius = 48.166378
@@ -75,4 +76,9 @@ shape = SubResource("CircleShape2D_boss")
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_5f346")
 autoplay = "default"
-frame_progress = 0.8227241
+frame_progress = 0.16772635
+
+[node name="HurtSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_jncid")
+volume_db = 10.257
+pitch_scale = 0.72

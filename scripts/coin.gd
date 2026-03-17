@@ -5,7 +5,7 @@ const MAGNET_RADIUS := 96.0
 const MAGNET_SPEED := 520.0
 
 @onready var _player: Node2D = null
-
+@onready var coin_sound: AudioStreamPlayer2D = $CoinSound
 
 func _ready() -> void:
 	add_to_group("coins")
@@ -50,8 +50,20 @@ func _draw() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
+
 	if body.is_in_group("player"):
 		var gm := get_node_or_null("/root/GameManager")
 		if gm and gm.has_method("add_coins"):
 			gm.add_coins(1)
+			
+		_play_pickup_sound()
 		queue_free()
+
+
+func _play_pickup_sound() -> void:
+	var sound := AudioStreamPlayer.new()
+	sound.stream = coin_sound.stream
+
+	get_tree().current_scene.add_child(sound)
+	sound.finished.connect(func():sound.queue_free()) # kill the sound after playing
+	sound.play()

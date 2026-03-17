@@ -15,6 +15,8 @@ func enter() -> void:
 	print("Entering player DashState")
 
 	var character := fsm.get_parent() as Player
+	var dash_sound: AudioStreamPlayer2D = character.get_node("DashSound") as AudioStreamPlayer2D
+	dash_sound.play()
 
 	if character == null:
 		return

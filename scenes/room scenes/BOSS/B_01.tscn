@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=4 uid="uid://bcoe3bvwfgge0"]
+[gd_scene load_steps=4 format=4 uid="uid://bcoe3bvwfgge0"]
 
 [ext_resource type="TileSet" uid="uid://ck1gfpteisar1" path="res://assets/tileset/tileset.tres" id="1_tcq4a"]
 [ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="2_gfddc"]
+[ext_resource type="AudioStream" uid="uid://e3rydqvrvcmw" path="res://assets/SFX/01_Explosion_v1.wav" id="3_pwpsu"]
 
 [node name="B01" type="Node2D"]
 
@@ -28,3 +29,9 @@ scale = Vector2(1.1132813, 1.078125)
 color = Color(0.9869794, 0.12499478, 0, 1)
 energy = 1.73
 texture = ExtResource("2_gfddc")
+
+[node name="RoarSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_pwpsu")
+volume_db = 12.117
+pitch_scale = 0.81
+autoplay = true

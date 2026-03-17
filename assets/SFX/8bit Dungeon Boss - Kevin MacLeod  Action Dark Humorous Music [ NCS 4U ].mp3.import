@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dxfirl7sye2km"
+path="res://.godot/imported/8bit Dungeon Boss - Kevin MacLeod  Action Dark Humorous Music [ NCS 4U ].mp3-38e910d0c5206ea04cb5d44a8960d699.mp3str"
+
+[deps]
+
+source_file="res://assets/SFX/8bit Dungeon Boss - Kevin MacLeod  Action Dark Humorous Music [ NCS 4U ].mp3"
+dest_files=["res://.godot/imported/8bit Dungeon Boss - Kevin MacLeod  Action Dark Humorous Music [ NCS 4U ].mp3-38e910d0c5206ea04cb5d44a8960d699.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

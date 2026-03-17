@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cbp56cjr63ns1"]
+[gd_scene load_steps=33 format=3 uid="uid://cbp56cjr63ns1"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://v3mh5fdjey5u" path="res://assets/sprites/enemies/tank_oni_b_idle.png" id="4_vt2b7"]
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+[ext_resource type="AudioStream" uid="uid://5jwwgp6qvg7a" path="res://assets/SFX/01_Hurt_v1.wav" id="12_vt2b7"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0qyf8"]
 atlas = ExtResource("2_8j6pf")
@@ -168,7 +169,6 @@ height = 58.0
 [node name="TankSlow" type="CharacterBody2D"]
 collision_layer = 4
 script = ExtResource("1")
-attack_damage = 1
 enemy_type = 3
 max_health = 11
 move_speed = 45.0
@@ -178,9 +178,6 @@ attack_damage = 2
 attack_cooldown = 1.6
 coin_min = 8
 coin_max = 10
-draw_color = Color(0.2, 0.3, 0.9, 1)
-draw_radius = 14.0
-draw_circles = false
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -7)
@@ -216,3 +213,8 @@ scale = Vector2(0.5, 0.5)
 color = Color(1, 0.53999996, 0.53999996, 1)
 energy = 0.36
 texture = ExtResource("4_i1nod")
+
+[node name="HurtSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("12_vt2b7")
+volume_db = 10.257
+pitch_scale = 0.72

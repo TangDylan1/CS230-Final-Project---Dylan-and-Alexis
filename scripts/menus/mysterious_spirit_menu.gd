@@ -130,4 +130,3 @@ func _build_ui() -> void:
 	ok.text = "OK"
 	ok.pressed.connect(func(): close_menu())
 	_result_box.add_child(ok)
-

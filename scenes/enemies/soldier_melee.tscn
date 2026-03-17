@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://wwutwhvbcorv"]
+[gd_scene load_steps=31 format=3 uid="uid://wwutwhvbcorv"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="4_sf1ie"]
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+[ext_resource type="AudioStream" uid="uid://5jwwgp6qvg7a" path="res://assets/SFX/01_Hurt_v1.wav" id="12_jx3ev"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8ni3l"]
 atlas = ExtResource("2_hg0of")
@@ -158,8 +159,6 @@ move_speed = 90.0
 aggro_range = 200.0
 attack_range = 30.0
 attack_cooldown = 0.8
-draw_color = Color(0.9, 0.15, 0.15, 1)
-draw_circles = false
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -15)
@@ -195,3 +194,8 @@ script = ExtResource("5")
 
 [node name="EnemyDeadState" type="Node" parent="FiniteStateMachine"]
 script = ExtResource("6")
+
+[node name="HurtSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("12_jx3ev")
+volume_db = 10.257
+pitch_scale = 0.72

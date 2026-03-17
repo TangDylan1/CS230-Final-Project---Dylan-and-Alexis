@@ -4,6 +4,8 @@ extends StaticBody2D
 ## Shoots waves of kunai in semicircle (bottom half), one shot every 0.2s.
 ## StaticBody2D so player projectiles (RigidBody2D) get body_entered when hitting.
 
+@onready var hurt_sound: AudioStreamPlayer2D = $HurtSound
+
 signal died
 signal health_changed(current: int, maximum: int)
 
@@ -60,6 +62,7 @@ func _process(delta: float) -> void:
 
 
 func apply_damage(amount: int) -> void:
+	hurt_sound.play()
 	if current_health <= 0:
 		return
 	current_health -= amount
