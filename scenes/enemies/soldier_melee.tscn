@@ -87,7 +87,7 @@ script = ExtResource("1")
 max_health = 6
 move_speed = 90.0
 aggro_range = 200.0
-attack_range = 22.0
+attack_range = 30.0
 attack_cooldown = 0.8
 draw_color = Color(0.9, 0.15, 0.15, 1)
 draw_circles = false
@@ -98,7 +98,7 @@ scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_jx3ev")
 animation = &"chase"
 autoplay = "idle"
-frame_progress = 0.5207404
+frame_progress = 0.7348989
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3)

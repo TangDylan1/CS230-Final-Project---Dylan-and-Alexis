@@ -31,9 +31,12 @@ var _damage_cooldown: float = 0.0  # 1s iframe after taking damage
 var _damage_flash_timer: float = 0.0  # 0.5s red/white flash when hit
 var _damage_flash_interval: float = 0.08
 var _damage_flash_show_white: bool = true
+var knockback_velocity := Vector2.ZERO
+var knockback_timer := 0.0
 
 @export var FRICTION := 0.1
 @export var ACCELERATION := 50.0
+@export var KNOCKBACK_DECAY := 1000.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var katana: Node2D = $Katana
@@ -139,6 +142,13 @@ func _physics_process(_delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
+	if knockback_timer > 0.0:
+		knockback_timer -= _delta
+		velocity = knockback_velocity
+		move_and_slide()
+		knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, KNOCKBACK_DECAY * _delta)
+		return
+
 	var input_dir := get_input_direction()
 	var move_speed := BASE_MAX_SPEED * GameManager.get_speed_multiplier()
 	var target_velocity := input_dir * move_speed
@@ -212,3 +222,11 @@ func _katana_hit(attack_dir: Vector2) -> void:
 			continue
 		if enemy.has_method("apply_damage"):
 			enemy.apply_damage(GameManager.get_katana_damage())
+
+
+# Force is knockback force, duration is how long the knockback lasts (used by enemy melee)
+func apply_knockback(force: Vector2, duration: float = 0.18) -> void:
+	if force == Vector2.ZERO:
+		return
+	knockback_velocity = force
+	knockback_timer = maxf(knockback_timer, duration)

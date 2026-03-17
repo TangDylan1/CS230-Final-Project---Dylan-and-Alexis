@@ -24,6 +24,7 @@ const SPAWN_OFFSETS := {
 	Vector2i.RIGHT: Vector2(48, 224),
 }
 
+const PLAYER_DOOR_LAYER := 2
 # Door cell positions inside a room (22x15).
 const DOOR_TILE_CELLS := {
 	Vector2i.UP: [
@@ -84,7 +85,6 @@ const DOOR_CENTERS := {
 
 # Player collides with world layer (1) — barriers use this to block doors.
 const WORLD_LAYER := 1
-
 
 @export var grid_size := Vector2i(8, 8)
 @export var target_rooms: int = 12
@@ -180,7 +180,9 @@ func _generate_dungeon() -> void:
 
 
 func _spawn_player() -> void:
-	if _player:
+	if is_instance_valid(_player):
+		if _player.get_parent() == self:
+			remove_child(_player)
 		_player.queue_free()
 	var player_scene := preload("res://scenes/player.tscn")
 	_player = player_scene.instantiate()
@@ -396,6 +398,8 @@ func _create_doors(open_dirs: Array[Vector2i]) -> void:
 		area.position = DOOR_CENTERS[dir]
 		area.monitoring = true
 		area.monitorable = false
+		area.collision_mask = 0
+		area.set_collision_mask_value(PLAYER_DOOR_LAYER, true)
 		add_child(area)
 
 		var shape := CollisionShape2D.new()

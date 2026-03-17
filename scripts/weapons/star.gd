@@ -5,7 +5,6 @@ extends Node2D
 
 @onready var body: RigidBody2D = $RigidBody2D
 @onready var star_animation: AnimationPlayer = $RigidBody2D/AnimationPlayer
-@onready var player: Node2D = get_parent().get_node("Player")
 
 func _ready() -> void:
 	body.gravity_scale = 0.0
@@ -21,9 +20,9 @@ func launch(dir: Vector2) -> void:
 	rotation = dir.angle()
 	body.linear_velocity = dir * speed
 
-func _on_body_entered(_hit_body: Node) -> void:
-	if _hit_body is EnemyBase:
-		_hit_body.apply_damage(GameManager.get_star_damage())
+func _on_body_entered(hit_body: Node) -> void:
+	if hit_body is EnemyBase:
+		hit_body.apply_damage(GameManager.get_star_damage())
 		queue_free()
-	elif _hit_body != player:
+	elif not hit_body.is_in_group("player"):
 		queue_free()

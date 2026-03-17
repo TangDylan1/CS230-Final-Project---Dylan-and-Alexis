@@ -22,8 +22,13 @@ func _on_body_entered(body: Node) -> void:
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
 		if body is CharacterBody2D:
-			var kb := direction.normalized() * 150.0
-			(body as CharacterBody2D).velocity += kb
+			var kb := direction.normalized() * 300.0
+			if body.has_method("apply_damage"):
+				body.apply_damage(2)
+			if body.has_method("apply_knockback"):
+				body.apply_knockback(kb, 0.22)
+			else:
+				(body as CharacterBody2D).velocity += kb
 		queue_free()
 	elif not body.is_in_group("enemies"):
 		queue_free()
