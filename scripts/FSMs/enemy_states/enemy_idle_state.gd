@@ -3,9 +3,15 @@ class_name EnemyIdleState
 
 
 func enter() -> void:
-	pass
+	# Check aggro immediately when entering idle (e.g. when spawned in boss room with player already present)
+	_try_aggro()
+
 
 func physics_update(_delta: float) -> void:
+	_try_aggro()
+
+
+func _try_aggro() -> void:
 	var enemy := fsm.get_parent() as EnemyBase
 	if enemy == null or enemy.frozen:
 		return

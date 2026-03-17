@@ -1,12 +1,12 @@
 extends Control
-## Heart HUD: 4 hearts (full / half / empty). Flashes red/white on damage for 0.5s.
-## Health is in half-hearts (0-8). Player emits health_changed(old_half, new_half, heart_index_to_flash).
+## Heart HUD: hearts (full / half / empty). Flashes red/white on damage for 0.5s.
+## Supports variable max hearts (e.g. 4 base + 1 per health card). Health in half-hearts.
 
 const HEART_SIZE := 16  # Source sprite size; display scaled 3x (48x48)
 const HEART_DISPLAY_SCALE := 3
-const NUM_HEARTS := 4
 const FLASH_DURATION := 0.5
 const FLASH_INTERVAL := 0.08  # Switch red/white every 0.08s
+const MAX_HEARTS := 10  # Cap display (20 half-hearts)
 
 # Sprite indices in sheet (2 rows of 5, 16x16 each: 80x32 texture)
 const IDX_FULL := 0
@@ -28,21 +28,10 @@ func _ready() -> void:
 	if _atlas == null:
 		push_error("HeartHUD: heart_spritesheet.png not found at res://assets/ui/")
 		return
-
-	# 4 hearts in a row, top-left (16x16 source scaled 3x = 48x48 display)
-	var display_size := HEART_SIZE * HEART_DISPLAY_SCALE
-	for i in NUM_HEARTS:
-		var rect := TextureRect.new()
-		rect.custom_minimum_size = Vector2(HEART_SIZE, HEART_SIZE)
-		rect.size = Vector2(HEART_SIZE, HEART_SIZE)
-		rect.position = Vector2(8 + i * (display_size + 4), 8)
-		rect.scale = Vector2(HEART_DISPLAY_SCALE, HEART_DISPLAY_SCALE)
-		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		rect.texture = _make_atlas_texture(IDX_FULL)
-		add_child(rect)
-		_hearts.append(rect)
-
-	_current_half_hearts = 8
+	# Match max hearts to GameManager (4 base + 1 per health card)
+	var initial_hearts := GameManager.get_max_hearts()
+	_ensure_heart_count(initial_hearts)
+	_current_half_hearts = initial_hearts * 2
 	_refresh_hearts()
 
 
@@ -63,19 +52,43 @@ func _process(delta: float) -> void:
 
 
 func set_half_hearts(half_hearts: int) -> void:
-	half_hearts = clampi(half_hearts, 0, NUM_HEARTS * 2)
+	half_hearts = clampi(half_hearts, 0, MAX_HEARTS * 2)
+	var need_hearts := int((half_hearts + 1) / 2.0)
+	if need_hearts > _hearts.size():
+		_ensure_heart_count(need_hearts)
 	if half_hearts == _current_half_hearts:
 		return
 	_current_half_hearts = half_hearts
 	_refresh_hearts()
 
 
+## Ensure at least min_hearts heart slots exist (adds more if needed, e.g. after health card).
+func _ensure_heart_count(min_hearts: int) -> void:
+	min_hearts = clampi(min_hearts, 1, MAX_HEARTS)
+	if _atlas == null:
+		return
+	var display_size := HEART_SIZE * HEART_DISPLAY_SCALE
+	while _hearts.size() < min_hearts:
+		var i := _hearts.size()
+		var rect := TextureRect.new()
+		rect.custom_minimum_size = Vector2(HEART_SIZE, HEART_SIZE)
+		rect.size = Vector2(HEART_SIZE, HEART_SIZE)
+		rect.position = Vector2(8 + i * (display_size + 4), 8)
+		rect.scale = Vector2(HEART_DISPLAY_SCALE, HEART_DISPLAY_SCALE)
+		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		rect.texture = _make_atlas_texture(IDX_FULL)
+		add_child(rect)
+		_hearts.append(rect)
+	custom_minimum_size.x = 8 + _hearts.size() * (display_size + 4)
+
+
 ## Call when player took damage: old_half, new_half (after damage), heart_index to flash (0-based).
 func on_damage_taken(old_half: int, new_half: int) -> void:
-	_current_half_hearts = clampi(new_half, 0, NUM_HEARTS * 2)
+	var max_half := _hearts.size() * 2
+	_current_half_hearts = clampi(new_half, 0, max_half)
 	# Rightmost heart that lost a half-heart
 	var heart_index := int((old_half - 1) / 2.0) if old_half > 0 else 0
-	heart_index = clampi(heart_index, 0, NUM_HEARTS - 1)
+	heart_index = clampi(heart_index, 0, _hearts.size() - 1)
 	_flash_heart_index = heart_index
 	_flash_timer = FLASH_DURATION
 	_flash_show_red = true

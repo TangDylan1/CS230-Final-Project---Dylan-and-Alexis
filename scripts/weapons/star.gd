@@ -36,7 +36,8 @@ func _on_body_entered(hit_body: Node) -> void:
 	if hit_body is EnemyBase:
 		hit_body.apply_damage(GameManager.get_star_damage())
 		queue_free()
-	elif hit_body.is_in_group("player"):
-		return		
-	else:
+	elif hit_body.has_method("apply_damage"):
+		hit_body.apply_damage(GameManager.get_star_damage())
+		queue_free()
+	elif not hit_body.is_in_group("player"):
 		queue_free()
