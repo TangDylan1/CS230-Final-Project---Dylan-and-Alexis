@@ -1,6 +1,7 @@
 extends State
 class_name EnemyIdleState
 
+
 func enter() -> void:
 	pass
 
@@ -17,5 +18,5 @@ func physics_update(_delta: float) -> void:
 		return
 
 	# Other enemies: use aggro_range (buffed globally in EnemyBase).
-	if dist <= enemy.aggro_range:
+	if dist <= enemy.aggro_range or enemy.been_attacked:
 		fsm.change_state("enemychasestate")

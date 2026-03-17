@@ -174,7 +174,9 @@ func _generate_dungeon() -> void:
 
 
 func _spawn_player() -> void:
-	if _player:
+	if is_instance_valid(_player):
+		if _player.get_parent() == self:
+			remove_child(_player)
 		_player.queue_free()
 	var player_scene := preload("res://scenes/player.tscn")
 	_player = player_scene.instantiate()

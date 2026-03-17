@@ -1,18 +1,68 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=16 format=3 uid="uid://b3vd1gp0c3hwm"]
 
-[ext_resource type="Script" path="res://scripts/enemies/enemy_base.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/FSMs/baseFSM.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+[ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
+[ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://dspbv6f17pr02" path="res://assets/sprites/enemies/tengu_r_idle.png" id="2_vmkcn"]
+[ext_resource type="Script" uid="uid://bhgi13n717tut" path="res://scripts/FSMs/enemy_states/enemy_idle_state.gd" id="3"]
+[ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
+[ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
+[ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
 
-[sub_resource type="CircleShape2D" id="cs1"]
-radius = 10.0
+[sub_resource type="AtlasTexture" id="AtlasTexture_yc4lg"]
+atlas = ExtResource("2_vmkcn")
+region = Rect2(0, 0, 34, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ah74"]
+atlas = ExtResource("2_vmkcn")
+region = Rect2(34, 0, 34, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dkhuw"]
+atlas = ExtResource("2_vmkcn")
+region = Rect2(68, 0, 34, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tg2fr"]
+atlas = ExtResource("2_vmkcn")
+region = Rect2(102, 0, 34, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fcpd1"]
+atlas = ExtResource("2_vmkcn")
+region = Rect2(136, 0, 34, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8noa4"]
+atlas = ExtResource("2_vmkcn")
+region = Rect2(170, 0, 34, 50)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_b0cd8"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yc4lg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4ah74")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dkhuw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tg2fr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fcpd1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8noa4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mfe3e"]
+height = 62.0
 
 [node name="RangedStatic" type="CharacterBody2D"]
 collision_layer = 4
-collision_mask = 1
 script = ExtResource("1")
 enemy_type = 1
 max_health = 2
@@ -23,10 +73,16 @@ attack_cooldown = 1.5
 coin_min = 3
 coin_max = 4
 draw_color = Color(0.15, 0.8, 0.15, 1)
-draw_radius = 10.0
+draw_circles = false
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-1, -19)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_b0cd8")
+autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("cs1")
+shape = SubResource("CapsuleShape2D_mfe3e")
 
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("2")

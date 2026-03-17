@@ -54,6 +54,15 @@ func _melee_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
 
 
 func _ranged_attack(enemy: EnemyBase, _delta: float, _dist: float) -> void:
+	var sprite := enemy.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	var dir := enemy.direction_to_player()
+
+	if sprite:
+		if dir.x > 0:
+			sprite.flip_h = false
+		elif dir.x < 0:
+			sprite.flip_h = true
+
 	# Ranged enemies now have infinite detection; just stand and shoot.
 	if _cooldown_timer >= enemy.attack_cooldown:
 		_fire_projectile(enemy)
@@ -111,19 +120,24 @@ func _create_projectile(enemy: EnemyBase) -> Node2D:
 
 	var shape := CollisionShape2D.new()
 	var circle := CircleShape2D.new()
-	circle.radius = 4.0
+	circle.radius = 16.0
 	shape.shape = circle
 	proj.add_child(shape)
 
 	# Visual
 	var visual := Node2D.new()
-	visual.set_script(load("res://scripts/enemies/projectile_visual.gd"))
+	var sprite := Sprite2D.new()
+	sprite.texture = load("res://assets/sprites/player/weapons/kunai.png")
+	sprite.scale *= 2.0
+	visual.add_child(sprite)
 	proj.add_child(visual)
+	
 
 	var dir := enemy.direction_to_player()
 	var script := load("res://scripts/enemies/enemy_projectile.gd")
 	proj.set_script(script)
 	proj.set("direction", dir)
 	proj.set("speed", ENEMY_PROJECTILE_SPEED)
+	sprite.rotation = dir.angle()
 
 	return proj

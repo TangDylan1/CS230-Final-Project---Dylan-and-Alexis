@@ -27,7 +27,7 @@ var attack_timer: float = 0.0
 var frozen: bool = false
 var _wobble_time: float = 0.0
 var _is_dead: bool = false
-var seen_player: bool = false
+var been_attacked: bool = false
 
 const COIN_SCENE_PATH := "res://scenes/coin.tscn"
 const WORLD_LAYER := 1
@@ -72,6 +72,7 @@ func direction_to_player() -> Vector2:
 
 
 func apply_damage(amount: int) -> void:
+	been_attacked = true
 	if _is_dead:
 		return
 	current_health -= amount
