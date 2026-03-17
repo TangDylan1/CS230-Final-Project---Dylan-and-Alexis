@@ -36,9 +36,11 @@ func _ready() -> void:
 	set_collision_layer_value(PLAYER_LAYER, true)
 	set_collision_mask_value(WORLD_LAYER, true)
 	set_collision_mask_value(ENEMY_LAYER, true)
+	katana.visible = false
+	throwing_star.visible = false
 
 
-func update_active_attack():
+func update_active_attack_sprites():
 	if active_attack == "katana":
 		katana.visible = true
 		throwing_star.visible = false
@@ -55,7 +57,13 @@ func throw_star(mouse_direction: Vector2) -> void:
 
 
 func _process(_delta: float) -> void:
-	update_active_attack()
+	update_active_attack_sprites()
+	if (Input.is_action_just_pressed("ui_swap")):
+		if active_attack == "katana":
+			active_attack = "throwing_star"
+		else:
+			active_attack = "katana"
+		
 
 	# Flip player based on mouse dir
 	var mouse_direction := (get_global_mouse_position() - global_position).normalized()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://7bsmg115yer3"]
+[gd_scene load_steps=15 format=3 uid="uid://7bsmg115yer3"]
 
 [ext_resource type="Script" uid="uid://fluebfhdyvyk" path="res://scripts/enemies/enemy_base.gd" id="1"]
 [ext_resource type="Script" uid="uid://vuil700e23ds" path="res://scripts/FSMs/baseFSM.gd" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://cgmq8neiqlsxm" path="res://scripts/FSMs/enemy_states/enemy_chase_state.gd" id="4"]
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
+[ext_resource type="Texture2D" uid="uid://d1ck4rlypb1gu" path="res://assets/effects/light.png" id="8_541si"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_541si"]
 atlas = ExtResource("2_up4ie")
@@ -61,7 +62,6 @@ coin_max = 3
 draw_color = Color(0.95, 0.9, 0.15, 1)
 draw_radius = 8.0
 draw_circles = false
-draw_attack_range = false
 wobble_amplitude = 0.6
 wobble_speed = 6.0
 
@@ -69,7 +69,7 @@ wobble_speed = 6.0
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_m14nx")
 autoplay = "default"
-frame_progress = 0.46684778
+frame_progress = 0.10697391
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3.39)
@@ -91,3 +91,10 @@ script = ExtResource("5")
 
 [node name="EnemyDeadState" type="Node" parent="FiniteStateMachine"]
 script = ExtResource("6")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(0.5, 9.5)
+scale = Vector2(0.5, 0.5)
+color = Color(1, 0.53999996, 0.53999996, 1)
+energy = 0.26
+texture = ExtResource("8_541si")
