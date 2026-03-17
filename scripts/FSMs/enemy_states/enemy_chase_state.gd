@@ -6,6 +6,9 @@ func enter() -> void:
 	var sprite := enemy.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
 	if enemy.enemy_type != EnemyBase.EnemyType.FLYING and enemy.enemy_type != EnemyBase.EnemyType.RANGED:
 		sprite.play("chase")
+		
+	if enemy.enemy_type == EnemyBase.EnemyType.FLYING:
+		enemy.set_collision_mask_value(EnemyBase.FURNITURE_LAYER, false)
 	pass
 
 func physics_update(delta: float) -> void:

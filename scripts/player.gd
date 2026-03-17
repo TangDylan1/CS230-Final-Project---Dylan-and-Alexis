@@ -4,9 +4,10 @@ extends CharacterBody2D
 const MAX_SPEED := 300.0
 const DASH_SPEED := 700.0
 const STAR_PROJECTILE_SCENE := preload("res://scenes/star.tscn")
-const PLAYER_LAYER := 3
+const PLAYER_LAYER := 2
 const WORLD_LAYER := 1
-const ENEMY_LAYER := 4
+const ENEMY_LAYER := 3
+const FURNITURE_LAYER := 4
 
 var frozen := false
 var dash_velocity := Vector2.ZERO
@@ -40,6 +41,7 @@ func _ready() -> void:
 	set_collision_layer_value(PLAYER_LAYER, true)
 	set_collision_mask_value(WORLD_LAYER, true)
 	set_collision_mask_value(ENEMY_LAYER, true)
+	set_collision_mask_value(FURNITURE_LAYER, true)
 	katana.visible = false
 	throwing_star.visible = false
 
