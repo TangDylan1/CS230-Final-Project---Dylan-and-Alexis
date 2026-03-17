@@ -96,7 +96,7 @@ enemy_type = 3
 max_health = 8
 move_speed = 45.0
 aggro_range = 180.0
-attack_range = 28.0
+attack_range = 50.0
 attack_cooldown = 1.6
 coin_min = 8
 coin_max = 10
@@ -105,15 +105,15 @@ draw_radius = 14.0
 draw_circles = false
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -15)
+position = Vector2(0, -7)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_gq6sh")
 animation = &"chase"
 autoplay = "idle"
-frame_progress = 0.25206864
+frame_progress = 0.35484943
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -11)
+position = Vector2(0, -1)
 shape = SubResource("CapsuleShape2D_0qyf8")
 
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]

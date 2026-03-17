@@ -15,10 +15,13 @@ var dash_cooldown := 0.0
 var active_attack := String("throwing_star")
 var star_timer := 0.0
 var star_spawn := false
-var current_health := 100
+var current_health := 10
+var knockback_velocity := Vector2.ZERO
+var knockback_timer := 0.0
 
 @export var FRICTION := 0.1
 @export var ACCELERATION := 50.0
+@export var KNOCKBACK_DECAY := 1000.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var katana: Node2D = $Katana
@@ -108,6 +111,13 @@ func _physics_process(_delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
+	if knockback_timer > 0.0:
+		knockback_timer -= _delta
+		velocity = knockback_velocity
+		move_and_slide()
+		knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, KNOCKBACK_DECAY * _delta)
+		return
+
 	var input_dir := get_input_direction()
 	var target_velocity := input_dir * MAX_SPEED
 	velocity = velocity.lerp(target_velocity, ACCELERATION * _delta)
@@ -154,10 +164,12 @@ func _katana_hit(attack_dir: Vector2) -> void:
 		if enemy.has_method("apply_damage"):
 			enemy.apply_damage(2)
 
+
 func _flash_damage() -> void:
 	modulate = Color(10, 10, 10)
 	var tween := create_tween()
 	tween.tween_property(self, "modulate", Color.WHITE, 0.15)
+
 
 func apply_damage(amount: int) -> void:
 	current_health -= amount
@@ -167,3 +179,10 @@ func apply_damage(amount: int) -> void:
 
 func _die() -> void:
 	print("Player has died!")
+
+# Force is knockback force, duration is how long the knockback lasts
+func apply_knockback(force: Vector2, duration: float = 0.18) -> void:
+	if force == Vector2.ZERO:
+		return
+	knockback_velocity = force
+	knockback_timer = maxf(knockback_timer, duration)

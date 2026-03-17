@@ -37,10 +37,6 @@ func physics_update(delta: float) -> void:
 
 
 func _melee_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
-	if _is_player_dashing(enemy):
-		fsm.change_state("enemychasestate")
-		return
-
 	enemy.velocity = Vector2.ZERO
 
 	if not _has_attacked and _cooldown_timer >= 0.2:
@@ -74,10 +70,6 @@ func _ranged_attack(enemy: EnemyBase, _delta: float, _dist: float) -> void:
 
 
 func _tank_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
-	if _is_player_dashing(enemy):
-		fsm.change_state("enemychasestate")
-		return
-
 	enemy.velocity = Vector2.ZERO
 
 	# Windup phase
@@ -105,10 +97,18 @@ func _tank_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
 func _do_melee_hit(enemy: EnemyBase) -> void:
 	var player := enemy.get_player()
 	if player and enemy.global_position.distance_to(player.global_position) <= enemy.attack_range * 2.0:
+		if player.has_method("apply_damage"):
+			player.apply_damage(enemy.attack_damage)
+
 		# Knockback player
 		if player is CharacterBody2D:
 			var kb_dir := (player.global_position - enemy.global_position).normalized()
-			(player as CharacterBody2D).velocity += kb_dir * 200.0
+			var kb_force := 400.0
+			var kb := kb_dir * kb_force
+			if player.has_method("apply_knockback"):
+				player.apply_knockback(kb, 0.6)
+			else:
+				(player as CharacterBody2D).velocity += kb
 
 
 func _fire_projectile(enemy: EnemyBase) -> void:
@@ -149,8 +149,3 @@ func _create_projectile(enemy: EnemyBase) -> Node2D:
 	sprite.rotation = dir.angle()
 
 	return proj
-
-
-func _is_player_dashing(enemy: EnemyBase) -> bool:
-	var player := enemy.get_player() as Player
-	return player != null and player.dash_velocity.length_squared() > 0.0

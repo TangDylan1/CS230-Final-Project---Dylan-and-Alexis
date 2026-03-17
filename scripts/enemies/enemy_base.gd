@@ -9,7 +9,7 @@ enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 @export var max_health: int = 3
 @export var move_speed: float = 80.0
 @export var aggro_range: float = 425.0
-@export var attack_range: float = 24.0
+@export var attack_range: float = 40.0
 @export var attack_damage: int = 1
 @export var attack_cooldown: float = 1.0
 @export var coin_min: int = 4
@@ -17,6 +17,9 @@ enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 @export var draw_color: Color = Color.RED
 @export var draw_radius: float = 10.0
 @export var draw_circles: bool = true
+@export var draw_attack_range: bool = true
+@export var attack_range_color: Color = Color(1.0, 0.35, 0.2, 0.7)
+@export var contact_hit_idle_cooldown: float = 0.5
 
 # Wobble for flying enemies
 @export var wobble_amplitude: float = 0.0
@@ -24,6 +27,7 @@ enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 
 var current_health: int
 var attack_timer: float = 0.0
+var contact_hit_idle_timer: float = 0.0
 var frozen: bool = false
 var _wobble_time: float = 0.0
 var _is_dead: bool = false
@@ -48,6 +52,8 @@ func _ready() -> void:
 func _draw() -> void:
 	if draw_circles:
 		draw_circle(Vector2.ZERO, draw_radius, draw_color)
+	if draw_attack_range:
+		draw_arc(Vector2.ZERO, attack_range, 0.0, TAU, 64, attack_range_color, 2.0)
 
 
 func get_player() -> Node2D:
