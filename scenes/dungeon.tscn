@@ -34,6 +34,7 @@ script = ExtResource("2_map")
 color = Color(0.3760466, 0.38724002, 0.5549008, 1)
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+process_mode = 3
 stream = ExtResource("4_0wj4k")
 autoplay = true
 parameters/looping = true
