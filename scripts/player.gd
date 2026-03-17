@@ -15,6 +15,7 @@ var dash_cooldown := 0.0
 var active_attack := String("throwing_star")
 var star_timer := 0.0
 var star_spawn := false
+var current_health := 100
 
 @export var FRICTION := 0.1
 @export var ACCELERATION := 50.0
@@ -152,3 +153,17 @@ func _katana_hit(attack_dir: Vector2) -> void:
 			continue
 		if enemy.has_method("apply_damage"):
 			enemy.apply_damage(2)
+
+func _flash_damage() -> void:
+	modulate = Color(10, 10, 10)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.15)
+
+func apply_damage(amount: int) -> void:
+	current_health -= amount
+	_flash_damage()
+	if current_health <= 0:
+		_die()
+
+func _die() -> void:
+	print("Player has died!")

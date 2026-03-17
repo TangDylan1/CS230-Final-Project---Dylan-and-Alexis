@@ -24,6 +24,7 @@ const SPAWN_OFFSETS := {
 	Vector2i.RIGHT: Vector2(48, 224),
 }
 
+const PLAYER_DOOR_LAYER := 2
 # Door cell positions inside a room (22x15).
 const DOOR_TILE_CELLS := {
 	Vector2i.UP: [
@@ -81,7 +82,6 @@ const DOOR_CENTERS := {
 	Vector2i.LEFT:  Vector2(16, 224),
 	Vector2i.RIGHT: Vector2(688, 224),
 }
-
 
 @export var grid_size := Vector2i(8, 8)
 @export var target_rooms: int = 12
@@ -371,6 +371,8 @@ func _create_doors(open_dirs: Array[Vector2i]) -> void:
 		area.position = DOOR_CENTERS[dir]
 		area.monitoring = true
 		area.monitorable = false
+		area.collision_mask = 0
+		area.set_collision_mask_value(PLAYER_DOOR_LAYER, true)
 		add_child(area)
 
 		# Collision shape sized to the 2-tile doorway.

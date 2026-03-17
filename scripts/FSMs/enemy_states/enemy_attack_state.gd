@@ -37,6 +37,10 @@ func physics_update(delta: float) -> void:
 
 
 func _melee_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
+	if _is_player_dashing(enemy):
+		fsm.change_state("enemychasestate")
+		return
+
 	enemy.velocity = Vector2.ZERO
 
 	if not _has_attacked and _cooldown_timer >= 0.2:
@@ -70,6 +74,10 @@ func _ranged_attack(enemy: EnemyBase, _delta: float, _dist: float) -> void:
 
 
 func _tank_attack(enemy: EnemyBase, _delta: float, dist: float) -> void:
+	if _is_player_dashing(enemy):
+		fsm.change_state("enemychasestate")
+		return
+
 	enemy.velocity = Vector2.ZERO
 
 	# Windup phase
@@ -141,3 +149,8 @@ func _create_projectile(enemy: EnemyBase) -> Node2D:
 	sprite.rotation = dir.angle()
 
 	return proj
+
+
+func _is_player_dashing(enemy: EnemyBase) -> bool:
+	var player := enemy.get_player() as Player
+	return player != null and player.dash_velocity.length_squared() > 0.0
