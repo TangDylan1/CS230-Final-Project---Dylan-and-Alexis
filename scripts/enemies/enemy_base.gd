@@ -17,7 +17,7 @@ enum EnemyType { SOLDIER, RANGED, FLYING, TANK }
 @export var draw_color: Color = Color.RED
 @export var draw_radius: float = 10.0
 @export var draw_circles: bool = true
-@export var draw_attack_range: bool = true
+@export var draw_attack_range: bool = false
 @export var attack_range_color: Color = Color(1.0, 0.35, 0.2, 0.7)
 @export var contact_hit_idle_cooldown: float = 0.5
 
@@ -38,6 +38,7 @@ const WORLD_LAYER := 1
 const PLAYER_LAYER := 3
 const ENEMY_LAYER := 4
 
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 func _ready() -> void:
 	current_health = max_health

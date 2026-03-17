@@ -9,6 +9,22 @@
 [ext_resource type="Script" uid="uid://ny65vxkcwcj5" path="res://scripts/FSMs/enemy_states/enemy_attack_state.gd" id="5"]
 [ext_resource type="Script" uid="uid://bwujda8eknpe4" path="res://scripts/FSMs/enemy_states/enemy_dead_state.gd" id="6"]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghqd6"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(0, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kvpm7"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(34, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_us83a"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(68, 0, 34, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yoicx"]
+atlas = ExtResource("3_i1nod")
+region = Rect2(102, 0, 34, 34)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_gq6sh"]
 atlas = ExtResource("2_wt8sv")
 region = Rect2(0, 0, 34, 34)
@@ -29,24 +45,25 @@ region = Rect2(102, 0, 34, 34)
 atlas = ExtResource("2_wt8sv")
 region = Rect2(136, 0, 34, 34)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ghqd6"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(0, 0, 34, 34)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_kvpm7"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(34, 0, 34, 34)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_us83a"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(68, 0, 34, 34)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_yoicx"]
-atlas = ExtResource("3_i1nod")
-region = Rect2(102, 0, 34, 34)
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_gq6sh"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghqd6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kvpm7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_us83a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yoicx")
+}],
+"loop": true,
+"name": &"chase",
+"speed": 7.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gq6sh")
@@ -64,25 +81,8 @@ animations = [{
 "texture": SubResource("AtlasTexture_hv5a6")
 }],
 "loop": true,
-"name": &"chase",
-"speed": 9.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ghqd6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_kvpm7")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_us83a")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_yoicx")
-}],
-"loop": true,
 "name": &"idle",
-"speed": 7.0
+"speed": 9.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0qyf8"]
@@ -108,9 +108,9 @@ draw_circles = false
 position = Vector2(0, -7)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_gq6sh")
-animation = &"chase"
+animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.35484943
+frame_progress = 0.0987899
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -1)

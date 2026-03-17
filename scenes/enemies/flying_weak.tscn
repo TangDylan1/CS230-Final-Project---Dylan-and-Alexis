@@ -61,6 +61,7 @@ coin_max = 3
 draw_color = Color(0.95, 0.9, 0.15, 1)
 draw_radius = 8.0
 draw_circles = false
+draw_attack_range = false
 wobble_amplitude = 0.6
 wobble_speed = 6.0
 
@@ -68,7 +69,7 @@ wobble_speed = 6.0
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_m14nx")
 autoplay = "default"
-frame_progress = 0.522382
+frame_progress = 0.46684778
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3.39)
