@@ -11,7 +11,16 @@ func enter() -> void:
 	if character.get_input_direction() == Vector2.ZERO:
 		fsm.change_state("idlestate")
 
-	character.play_sprite_animation("walk")
+	if character.active_attack == "katana" and (character.sprite == null or character.sprite.animation != "walk_r"):
+		character.play_sprite_animation("walk_r")
+	elif character.active_attack == "throwing_star" and (character.sprite == null or character.sprite.animation != "walk_b"):
+		character.play_sprite_animation("walk_b")
+
+func update(_delta: float) -> void:
+	var character := fsm.get_parent() as Player
+	if character == null:
+		return
+	update_walk_animation()
 
 
 func physics_update(_delta: float):
@@ -36,3 +45,15 @@ func physics_update(_delta: float):
 		clamp(character.velocity.x, -character.MAX_SPEED, character.MAX_SPEED),
 		clamp(character.velocity.y, -character.MAX_SPEED, character.MAX_SPEED)
 	)
+
+func update_walk_animation() -> void:
+	var character := fsm.get_parent() as Player
+	if character == null:
+		return
+
+	if character.active_attack == "katana":
+		if character.sprite != null and character.sprite.animation != "walk_r":
+			character.play_sprite_animation("walk_r")
+	elif character.active_attack == "throwing_star":
+		if character.sprite != null and character.sprite.animation != "walk_b":
+			character.play_sprite_animation("walk_b")

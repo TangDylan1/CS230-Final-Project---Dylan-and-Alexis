@@ -12,12 +12,14 @@ var frozen := false
 var dash_velocity := Vector2.ZERO
 var direction := Vector2.ZERO
 var dash_cooldown := 0.0
-var active_attack := String("throwing_star")
+var active_attack := String("katana")
 var star_timer := 0.0
 var star_spawn := false
 var current_health := 10
 var knockback_velocity := Vector2.ZERO
 var knockback_timer := 0.0
+var swap_timer := 0.0
+var swap_cooldown := 5.0
 
 @export var FRICTION := 0.1
 @export var ACCELERATION := 50.0
@@ -29,6 +31,8 @@ var knockback_timer := 0.0
 @onready var slash_animation: AnimatedSprite2D = $Katana/SlashEffect
 @onready var throwing_star: Node2D = $ThrowingStar
 @onready var throwing_star_animation: AnimationPlayer = $ThrowingStar/StarNode2D/StarAnimation
+@onready var katana_sprite: Sprite2D = $Katana/KatNode2D/Sprite2D
+@onready var throwing_star_sprite: Sprite2D = $ThrowingStar/StarNode2D/Sprite2D
 
 
 func _ready() -> void:
@@ -57,13 +61,28 @@ func throw_star(mouse_direction: Vector2) -> void:
 
 
 func _process(_delta: float) -> void:
+
+	# Attack swapping
+	swap_timer -= _delta
+	if swap_timer < 0.0:
+		swap_timer = 0.0
+
 	update_active_attack_sprites()
+	
 	if (Input.is_action_just_pressed("ui_swap")):
+		print(swap_timer)
+		if swap_timer > 0.0:
+			return
+
+		swap_timer = swap_cooldown
 		if active_attack == "katana":
 			active_attack = "throwing_star"
+			swap_shader_flash(Color("#30cbff"), 0.7, sprite)
+			swap_shader_flash(Color("#30cbff"), 0.7, throwing_star_sprite)
 		else:
 			active_attack = "katana"
-		
+			swap_shader_flash(Color("#ff5260"), 0.7, sprite)
+			swap_shader_flash(Color("#ff5260"), 0.7, katana_sprite)
 
 	# Flip player based on mouse dir
 	var mouse_direction := (get_global_mouse_position() - global_position).normalized()
@@ -194,3 +213,12 @@ func apply_knockback(force: Vector2, duration: float = 0.18) -> void:
 		return
 	knockback_velocity = force
 	knockback_timer = maxf(knockback_timer, duration)
+
+
+func swap_shader_flash(color: Color, duration: float, flash_sprite: CanvasItem) -> void:
+	var shader_material := flash_sprite.material as ShaderMaterial
+	
+	if shader_material:
+		shader_material.set_shader_parameter("outline_color", color)
+		var tween := create_tween()
+		tween.tween_property(shader_material, "shader_parameter/outline_color", Color(0, 0, 0, 0), duration)
